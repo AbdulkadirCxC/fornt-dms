@@ -1,0 +1,88 @@
+.payment-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+}
+
+.payment-form-loading {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.payment-form h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #334155;
+}
+
+.payment-form-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.payment-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.payment-form .form-group label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.payment-form .form-group input,
+.payment-form .form-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.payment-form .form-group input:focus,
+.payment-form .form-group select:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
+}
+
+.payment-form .form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.payment-form .form-actions button {
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.payment-form .form-actions button[type="submit"] {
+  background: #0d9488;
+  color: white;
+}
+
+.payment-form .form-actions button[type="submit"]:hover {
+  background: #0f766e;
+}
+
+.payment-form .form-actions .btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.payment-form .form-actions .btn-cancel:hover {
+  background: #e2e8f0;
+}

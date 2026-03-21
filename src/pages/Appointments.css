@@ -1,0 +1,112 @@
+.appointments-page h1 {
+  margin: 0 0 0.25rem;
+  color: #0f766e;
+  font-size: 1.75rem;
+}
+
+.appointments-page .page-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.appointments-page .btn-add {
+  padding: 0.5rem 1rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.appointments-page .btn-add:hover {
+  background: #0f766e;
+}
+
+.appointments-page .appointment-form-modal {
+  margin-bottom: 1.5rem;
+}
+
+.refresh-btn {
+  padding: 0.5rem 1rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.appointments-table-wrap {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.appointments-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.appointments-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.scheduled,
+.status-badge.pending {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-badge.confirmed {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.status-badge.completed {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.no-show {
+  background: #fef3c7;
+  color: #b45309;
+}

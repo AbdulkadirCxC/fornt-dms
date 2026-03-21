@@ -1,0 +1,97 @@
+.dashboard h1 {
+  margin: 0 0 0.25rem;
+  color: #0f766e;
+  font-size: 1.75rem;
+}
+
+.dashboard-subtitle {
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.dashboard-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #fecaca;
+}
+
+.dashboard-error small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #991b1b;
+  font-size: 0.85rem;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.recent-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.recent-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #334155;
+}
+
+.recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.recent-list li:last-child {
+  border-bottom: none;
+}
+
+.recent-status {
+  color: #64748b;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.empty-state {
+  color: #94a3b8;
+  font-style: italic;
+}

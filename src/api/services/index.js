@@ -1,0 +1,10 @@
+export { patientsApi } from './patients';
+export { dashboardApi } from './dashboard';
+export { appointmentsApi } from './appointments';
+export { dentistsApi } from './dentists';
+export { treatmentsApi } from './treatments';
+export { patientTreatmentsApi } from './patientTreatments';
+export { invoicesApi } from './invoices';
+export { paymentsApi } from './payments';
+export { reportsApi } from './reports';
+export { authApi } from './auth';

@@ -1,0 +1,10 @@
+.dms-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.dms-main {
+  flex: 1;
+  padding: 2rem;
+  background: var(--dms-bg, #f8fafc);
+}
