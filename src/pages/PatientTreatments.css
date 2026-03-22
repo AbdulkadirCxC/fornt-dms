@@ -60,12 +60,120 @@
   background: #0f766e;
 }
 
+.patient-treatments-page .btn-print-visit-row {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #0f766e;
+  background: #ecfdf5;
+  border: 1px solid #99f6e4;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.patient-treatments-page .btn-print-visit-row:hover:not(:disabled) {
+  background: #d1fae5;
+}
+
+.patient-treatments-page .btn-print-visit-row:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .patient-treatments-page .page-error {
   background: #fef2f2;
   color: #b91c1c;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.patient-treatments-page .page-success {
+  background: #ecfdf5;
+  color: #065f46;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #a7f3d0;
+}
+
+.visit-success-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.visit-success-text {
+  flex: 1;
+  min-width: min(100%, 280px);
+}
+
+.visit-success-title {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: #047857;
+}
+
+.visit-success-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #0f766e;
+  max-width: 52ch;
+}
+
+.visit-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-visit-doc {
+  padding: 0.45rem 0.9rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-visit-doc:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.btn-visit-doc:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.visit-doc-link {
+  font-size: 0.9rem;
+  color: #0f766e;
+  font-weight: 500;
+}
+
+.visit-doc-link:hover {
+  text-decoration: underline;
+}
+
+.btn-dismiss-success {
+  padding: 0.35rem 0.65rem;
+  background: transparent;
+  border: 1px solid #6ee7b7;
+  color: #047857;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-dismiss-success:hover {
+  background: #d1fae5;
 }
 
 .patient-treatments-page .patient-treatment-form-modal {

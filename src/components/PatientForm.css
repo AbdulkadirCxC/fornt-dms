@@ -3,7 +3,28 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  max-width: 400px;
+  max-width: 520px;
+}
+
+.patient-form .form-grid-row {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.patient-form .form-grid-row--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.patient-form .form-grid-row .form-group {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .patient-form .form-grid-row--2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .patient-form h3 {

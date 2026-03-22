@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { paymentsApi } from '../api/services';
 import PaymentForm from '../components/PaymentForm';
+import { printPaymentVoucher, downloadPaymentVoucherPdf } from '../utils/paymentVoucher';
 import './Payments.css';
 
 export default function Payments() {
@@ -10,6 +11,7 @@ export default function Payments() {
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [voucherLoadingId, setVoucherLoadingId] = useState(null);
 
   const fetchPayments = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -78,6 +80,16 @@ export default function Payments() {
     return payment.invoice != null ? `Invoice #${payment.invoice}` : payment.invoice_id != null ? `Invoice #${payment.invoice_id}` : '—';
   };
 
+  const runVoucherAction = async (payment, action) => {
+    const id = payment.id ?? payment.payment_id;
+    setVoucherLoadingId(id);
+    try {
+      await action(payment);
+    } finally {
+      setVoucherLoadingId(null);
+    }
+  };
+
   return (
     <div className="payments-page">
       <div className="page-header">
@@ -122,23 +134,50 @@ export default function Payments() {
                 <th>Amount</th>
                 <th>Method</th>
                 <th>Payment Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No payments found. Add a payment using the form above.</td>
+                  <td colSpan={6}>No payments found. Add a payment using the form above.</td>
                 </tr>
               ) : (
-                payments.map((p) => (
-                  <tr key={p.id ?? p.payment_id}>
-                    <td>{p.id ?? p.payment_id ?? '—'}</td>
-                    <td>{getInvoiceLabel(p)}</td>
-                    <td>{formatAmount(p.amount)}</td>
-                    <td>{p.method ?? '—'}</td>
-                    <td>{formatDate(p.payment_date)}</td>
-                  </tr>
-                ))
+                payments.map((p) => {
+                  const rowId = p.id ?? p.payment_id;
+                  const voucherBusy = voucherLoadingId === rowId;
+                  return (
+                    <tr key={rowId}>
+                      <td>{rowId ?? '—'}</td>
+                      <td>{getInvoiceLabel(p)}</td>
+                      <td>{formatAmount(p.amount)}</td>
+                      <td>{p.method ?? '—'}</td>
+                      <td>{formatDate(p.payment_date)}</td>
+                      <td>
+                        <div className="payment-voucher-actions">
+                          <button
+                            type="button"
+                            className="btn-payment-voucher-print"
+                            disabled={voucherBusy}
+                            onClick={() => runVoucherAction(p, printPaymentVoucher)}
+                            title="Print voucher"
+                          >
+                            {voucherBusy ? '…' : 'Print'}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-payment-voucher-pdf"
+                            disabled={voucherBusy}
+                            onClick={() => runVoucherAction(p, downloadPaymentVoucherPdf)}
+                            title="Download PDF"
+                          >
+                            {voucherBusy ? '…' : 'PDF'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

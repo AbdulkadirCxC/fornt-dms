@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { authApi } from '../api/services';
 import { tokenStorage } from '../api/tokenStorage';
 import './Login.css';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const successMessage = location.state?.registeredMessage;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +55,11 @@ export default function Login() {
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          {successMessage && (
+            <div className="login-success" role="status">
+              {successMessage}
+            </div>
+          )}
           {error && <div className="login-error">{error}</div>}
 
           <div className="form-group">

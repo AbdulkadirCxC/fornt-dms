@@ -1,0 +1,112 @@
+.searchable-select {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.searchable-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  color: #334155;
+}
+
+.searchable-select-trigger:hover:not(:disabled) {
+  border-color: #cbd5e1;
+}
+
+.searchable-select-trigger:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+}
+
+.searchable-select-trigger:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.searchable-select-trigger.is-placeholder .searchable-select-trigger-text {
+  color: #94a3b8;
+}
+
+.searchable-select-trigger-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchable-select-chevron {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.searchable-select-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.searchable-select-search {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.searchable-select-search:focus {
+  outline: none;
+}
+
+.searchable-select-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.searchable-select-option {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.searchable-select-option:hover {
+  background: #f8fafc;
+}
+
+.searchable-select-option.selected {
+  background: #ecfdf5;
+  color: #0f766e;
+  font-weight: 500;
+}
+
+.searchable-select-empty {
+  padding: 0.75rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  text-align: center;
+}

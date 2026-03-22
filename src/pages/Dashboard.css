@@ -70,25 +70,100 @@
   color: #334155;
 }
 
-.recent-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.dashboard-action-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
-.recent-list li {
-  padding: 0.5rem 0;
+.recent-table-wrap {
+  overflow-x: auto;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.recent-table th,
+.recent-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
   border-bottom: 1px solid #f1f5f9;
 }
 
-.recent-list li:last-child {
-  border-bottom: none;
+.recent-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
-.recent-status {
-  color: #64748b;
-  font-size: 0.9em;
-  font-weight: 400;
+.recent-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.recent-status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.recent-status-badge.scheduled,
+.recent-status-badge.pending {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.recent-status-badge.confirmed {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.recent-status-badge.completed {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.recent-status-badge.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.recent-status-badge.no-show {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.btn-mark-complete {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: white;
+  background: #0d9488;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-mark-complete:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.btn-mark-complete:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.recent-action-muted {
+  color: #cbd5e1;
+  font-size: 0.9rem;
 }
 
 .empty-state {

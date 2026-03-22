@@ -4,6 +4,7 @@ import './Sidebar.css';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊' },
+  { to: '/register', label: 'Register', icon: '✍️' },
   { to: '/dentists', label: 'Dentists', icon: '👨‍⚕️' },
   { to: '/patients', label: 'Patients', icon: '👥' },
   { to: '/treatments', label: 'Treatments', icon: '💊' },

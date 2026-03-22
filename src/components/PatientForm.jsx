@@ -56,30 +56,32 @@ export default function PatientForm({ onSubmit, onCancel, initialData = null, di
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="gender">Gender</label>
-        <select
-          id="gender"
-          name="gender"
-          value={formData.gender ?? ''}
-          onChange={handleChange}
-        >
-          <option value="">Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
+      <div className="form-grid-row form-grid-row--2">
+        <div className="form-group">
+          <label htmlFor="gender">Gender</label>
+          <select
+            id="gender"
+            name="gender"
+            value={formData.gender ?? ''}
+            onChange={handleChange}
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="date_of_birth">Date of Birth</label>
-        <input
-          type="date"
-          id="date_of_birth"
-          name="date_of_birth"
-          value={formData.date_of_birth ?? ''}
-          onChange={handleChange}
-        />
+        <div className="form-group">
+          <label htmlFor="date_of_birth">Date of Birth</label>
+          <input
+            type="date"
+            id="date_of_birth"
+            name="date_of_birth"
+            value={formData.date_of_birth ?? ''}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
       <div className="form-group">

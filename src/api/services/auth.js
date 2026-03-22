@@ -16,4 +16,6 @@ export const authApi = {
   getToken: (credentials) => authAxios.post('/auth/token/', credentials),
   // POST /api/auth/token/refresh/ or /api/token/refresh/ - body: { refresh }
   refreshToken: (refresh) => authAxios.post('/auth/token/refresh/', { refresh }),
+  /** POST /api/auth/register/ — body: { username, email?, password, password_confirm } */
+  register: (payload) => authAxios.post('/auth/register/', payload),
 };

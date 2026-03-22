@@ -74,6 +74,15 @@
   margin-bottom: 1rem;
 }
 
+.login-success {
+  background: #ecfdf5;
+  color: #047857;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
 .login-btn {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -94,4 +103,27 @@
 .login-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.login-footer {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.login-link {
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.login-optional {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 0.85rem;
 }

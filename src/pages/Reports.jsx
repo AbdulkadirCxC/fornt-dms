@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { reportsApi } from '../api/services';
+import SearchableSelect from '../components/SearchableSelect';
 import './Reports.css';
 
 const REPORT_TYPES = [
@@ -41,6 +42,11 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const reportTypeOptions = useMemo(
+    () => REPORT_TYPES.map((r) => ({ value: r.id, label: r.label })),
+    [],
+  );
+
   const currentReport = REPORT_TYPES.find((r) => r.id === reportType);
 
   useEffect(() => {
@@ -65,7 +71,8 @@ export default function Reports() {
   }, [reportType, dateFilter]);
 
   const handleReportChange = (e) => {
-    setReportType(e.target.value);
+    const next = e.target.value;
+    if (next) setReportType(next);
     setDateFilter('');
   };
 
@@ -110,13 +117,15 @@ export default function Reports() {
         <div className="page-header-actions">
           <div className="report-selector">
             <label htmlFor="report-type">Report Type</label>
-            <select id="report-type" value={reportType} onChange={handleReportChange}>
-              {REPORT_TYPES.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
+            <SearchableSelect
+              id="report-type"
+              name="reportType"
+              value={reportType}
+              onChange={handleReportChange}
+              options={reportTypeOptions}
+              showEmptyOption={false}
+              searchPlaceholder="Search report types…"
+            />
           </div>
           {reportType === 'daily-revenue' && (
             <div className="date-filter">

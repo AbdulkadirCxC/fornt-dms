@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react';
-import { patientsApi } from '../api/services';
+import { patientsApi, appointmentsApi } from '../api/services';
 import PatientForm from '../components/PatientForm';
+import AppointmentForm from '../components/AppointmentForm';
 import './Patients.css';
+
+function sortPatientsDesc(list) {
+  return [...list].sort((a, b) => {
+    const idA = Number(a.id ?? a.patientId ?? 0);
+    const idB = Number(b.id ?? b.patientId ?? 0);
+    return idB - idA;
+  });
+}
 
 export default function Patients() {
   const [patients, setPatients] = useState([]);
@@ -10,18 +19,22 @@ export default function Patients() {
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [appointmentForPatient, setAppointmentForPatient] = useState(null);
+  const [submittingAppointment, setSubmittingAppointment] = useState(false);
 
   const fetchPatients = async (silent = false) => {
     if (!silent) setLoading(true);
     setError(null);
     try {
-      const params = search ? { search, limit: 50 } : { limit: 50 };
+      const baseParams = { limit: 50, ordering: '-id' };
+      const params = search ? { ...baseParams, search } : baseParams;
       const res = await patientsApi.getAll(params);
       const data = res.data;
       const list = Array.isArray(data)
         ? data
         : data?.results ?? data?.data ?? data?.patients ?? data?.items ?? [];
-      setPatients(Array.isArray(list) ? list : []);
+      const raw = Array.isArray(list) ? list : [];
+      setPatients(sortPatientsDesc(raw));
     } catch (err) {
       setError(err.response?.data?.message ?? 'Failed to load patients. Is the API running?');
       setPatients([]);
@@ -57,6 +70,28 @@ export default function Patients() {
     }
   };
 
+  const handleAppointmentSubmit = async (payload) => {
+    setSubmittingAppointment(true);
+    setError(null);
+    try {
+      const apiPayload = {
+        patient: payload.patient,
+        dentist: payload.dentist,
+        date: payload.date,
+        time: payload.time,
+        status: payload.status,
+        notes: payload.notes,
+      };
+      await appointmentsApi.create(apiPayload);
+      setAppointmentForPatient(null);
+    } catch (err) {
+      const msg = err.response?.data?.message ?? err.response?.data?.detail ?? 'Failed to add appointment.';
+      setError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    } finally {
+      setSubmittingAppointment(false);
+    }
+  };
+
   return (
     <div className="patients-page">
       <div className="page-header">
@@ -73,7 +108,10 @@ export default function Patients() {
           </form>
           <button
             className="btn-add"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setAppointmentForPatient(null);
+              setShowForm(true);
+            }}
           >
             Add Patient
           </button>
@@ -92,6 +130,19 @@ export default function Patients() {
         </div>
       )}
 
+      {appointmentForPatient && (
+        <div className="patient-form-modal">
+          <AppointmentForm
+            key={appointmentForPatient.id}
+            onSubmit={handleAppointmentSubmit}
+            onCancel={() => setAppointmentForPatient(null)}
+            disabled={submittingAppointment}
+            lockedPatientId={appointmentForPatient.id}
+            lockedPatientName={appointmentForPatient.full_name}
+          />
+        </div>
+      )}
+
       {loading ? (
         <p>Loading patients...</p>
       ) : (
@@ -104,12 +155,13 @@ export default function Patients() {
                 <th>Gender</th>
                 <th>Date of Birth</th>
                 <th>Phone</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {patients.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No patients found. Add a patient using the form above.</td>
+                  <td colSpan={6}>No patients found. Add a patient using the form above.</td>
                 </tr>
               ) : (
                 patients.map((p) => (
@@ -119,6 +171,21 @@ export default function Patients() {
                     <td>{p.gender ?? '—'}</td>
                     <td>{p.date_of_birth ?? '—'}</td>
                     <td>{p.phone ?? '—'}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn-patient-appt"
+                        onClick={() => {
+                          setShowForm(false);
+                          setAppointmentForPatient({
+                            id: p.id ?? p.patientId,
+                            full_name: p.full_name,
+                          });
+                        }}
+                      >
+                        Appointment
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}

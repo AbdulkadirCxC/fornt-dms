@@ -3,7 +3,35 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  max-width: 450px;
+  max-width: 920px;
+}
+
+.patient-treatment-form .form-grid-row {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.patient-treatment-form .form-grid-row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.patient-treatment-form .form-grid-row .form-group {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .patient-treatment-form .form-grid-row--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.patient-treatment-form-hint {
+  margin: -0.25rem 0 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .patient-treatment-form-loading {
@@ -91,4 +119,97 @@
 
 .patient-treatment-form .form-actions .btn-cancel:hover {
   background: #e2e8f0;
+}
+
+.treatment-lines-section {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.treatment-lines-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.treatment-lines-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.btn-add-line {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0f766e;
+  background: #ecfdf5;
+  border: 1px solid #99f6e4;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-add-line:hover:not(:disabled) {
+  background: #d1fae5;
+}
+
+.btn-add-line:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.treatment-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.treatment-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.treatment-line-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 160px);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 540px) {
+  .treatment-line-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.treatment-line .form-group {
+  margin-bottom: 0;
+}
+
+.btn-remove-line {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #64748b;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-remove-line:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
 }

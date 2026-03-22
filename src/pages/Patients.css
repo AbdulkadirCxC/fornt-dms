@@ -101,3 +101,19 @@
 .patients-table tbody tr:hover {
   background: #f8fafc;
 }
+
+.btn-patient-appt {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0f766e;
+  background: #ecfdf5;
+  border: 1px solid #99f6e4;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-patient-appt:hover {
+  background: #d1fae5;
+  border-color: #5eead4;
+}

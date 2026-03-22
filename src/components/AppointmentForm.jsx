@@ -1,6 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { patientsApi, dentistsApi } from '../api/services';
+import SearchableSelect from './SearchableSelect';
 import './AppointmentForm.css';
+
+function patientLabel(p) {
+  return (
+    (p.full_name ?? p.name ?? `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim()) ||
+    `Patient #${p.id ?? p.patientId}`
+  );
+}
+
+/** Newest / highest patient id first (matches last insert at top when ids auto-increment). */
+function sortPatientsByIdDesc(list) {
+  return [...list].sort((a, b) => {
+    const idA = Number(a.id ?? a.patientId ?? 0);
+    const idB = Number(b.id ?? b.patientId ?? 0);
+    return idB - idA;
+  });
+}
 
 const initialValues = {
   patient: '',
@@ -11,8 +28,21 @@ const initialValues = {
   notes: '',
 };
 
-export default function AppointmentForm({ onSubmit, onCancel, initialData = null, disabled = false }) {
-  const [formData, setFormData] = useState(initialData ?? initialValues);
+export default function AppointmentForm({
+  onSubmit,
+  onCancel,
+  initialData = null,
+  disabled = false,
+  lockedPatientId = null,
+  lockedPatientName = null,
+}) {
+  const [formData, setFormData] = useState(() => {
+    const base = { ...initialValues, ...initialData };
+    if (lockedPatientId != null) {
+      base.patient = String(lockedPatientId);
+    }
+    return base;
+  });
   const [patients, setPatients] = useState([]);
   const [dentists, setDentists] = useState([]);
   const [error, setError] = useState('');
@@ -21,8 +51,12 @@ export default function AppointmentForm({ onSubmit, onCancel, initialData = null
   useEffect(() => {
     const loadOptions = async () => {
       try {
+        const patientsPromise =
+          lockedPatientId != null
+            ? Promise.resolve({ data: [] })
+            : patientsApi.getAll({ limit: 100, ordering: '-id' });
         const [patientsRes, dentistsRes] = await Promise.all([
-          patientsApi.getAll({ limit: 100 }),
+          patientsPromise,
           dentistsApi.getAll({ limit: 100 }),
         ]);
         const patientsData = patientsRes.data;
@@ -33,7 +67,8 @@ export default function AppointmentForm({ onSubmit, onCancel, initialData = null
         const dentistsList = Array.isArray(dentistsData)
           ? dentistsData
           : dentistsData?.results ?? dentistsData?.data ?? dentistsData?.dentists ?? [];
-        setPatients(Array.isArray(patientsList) ? patientsList : []);
+        const rawPatients = Array.isArray(patientsList) ? patientsList : [];
+        setPatients(sortPatientsByIdDesc(rawPatients));
         setDentists(Array.isArray(dentistsList) ? dentistsList : []);
       } catch {
         setPatients([]);
@@ -43,7 +78,25 @@ export default function AppointmentForm({ onSubmit, onCancel, initialData = null
       }
     };
     loadOptions();
-  }, []);
+  }, [lockedPatientId]);
+
+  const patientOptions = useMemo(
+    () =>
+      patients.map((p) => ({
+        value: p.id ?? p.patientId,
+        label: patientLabel(p),
+      })),
+    [patients]
+  );
+
+  const dentistOptions = useMemo(
+    () =>
+      dentists.map((d) => ({
+        value: d.id ?? d.dentistId,
+        label: d.name ?? `Dentist #${d.id ?? d.dentistId}`,
+      })),
+    [dentists]
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,39 +140,42 @@ export default function AppointmentForm({ onSubmit, onCancel, initialData = null
 
       {error && <div className="appointment-form-error">{error}</div>}
 
-      <div className="form-group">
-        <label htmlFor="patient">Patient *</label>
-        <select
-          id="patient"
-          name="patient"
-          value={formData.patient}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select patient</option>
-          {patients.map((p) => (
-            <option key={p.id ?? p.patientId} value={p.id ?? p.patientId}>
-              {(p.full_name ?? p.name ?? `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim()) || `Patient #${p.id ?? p.patientId}`}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="form-grid-row form-grid-row--2">
+        <div className="form-group">
+          <label htmlFor="patient">Patient *</label>
+          {lockedPatientId != null ? (
+            <div className="appointment-form-patient-locked" id="patient">
+              {lockedPatientName?.trim() ||
+                `Patient #${lockedPatientId}`}
+            </div>
+          ) : (
+            <SearchableSelect
+              id="patient"
+              name="patient"
+              value={formData.patient}
+              onChange={handleChange}
+              options={patientOptions}
+              required
+              disabled={disabled}
+              emptyOptionLabel="Select patient"
+              searchPlaceholder="Search patients…"
+            />
+          )}
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="dentist">Dentist</label>
-        <select
-          id="dentist"
-          name="dentist"
-          value={formData.dentist}
-          onChange={handleChange}
-        >
-          <option value="">Select dentist</option>
-          {dentists.map((d) => (
-            <option key={d.id ?? d.dentistId} value={d.id ?? d.dentistId}>
-              {d.name ?? `Dentist #${d.id ?? d.dentistId}`}
-            </option>
-          ))}
-        </select>
+        <div className="form-group">
+          <label htmlFor="dentist">Dentist</label>
+          <SearchableSelect
+            id="dentist"
+            name="dentist"
+            value={formData.dentist}
+            onChange={handleChange}
+            options={dentistOptions}
+            disabled={disabled}
+            emptyOptionLabel="Select dentist"
+            searchPlaceholder="Search dentists…"
+          />
+        </div>
       </div>
 
       <div className="form-row">
@@ -146,31 +202,33 @@ export default function AppointmentForm({ onSubmit, onCancel, initialData = null
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="status">Status</label>
-        <select
-          id="status"
-          name="status"
-          value={formData.status ?? 'scheduled'}
-          onChange={handleChange}
-        >
-          <option value="scheduled">Scheduled</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
+      <div className="form-grid-row form-grid-row--2 form-grid-row--status-notes">
+        <div className="form-group">
+          <label htmlFor="status">Status</label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status ?? 'scheduled'}
+            onChange={handleChange}
+          >
+            <option value="scheduled">Scheduled</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="notes">Notes</label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes ?? ''}
-          onChange={handleChange}
-          placeholder="Appointment notes"
-          rows={3}
-        />
+        <div className="form-group">
+          <label htmlFor="notes">Notes</label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes ?? ''}
+            onChange={handleChange}
+            placeholder="Appointment notes"
+            rows={3}
+          />
+        </div>
       </div>
 
       <div className="form-actions">

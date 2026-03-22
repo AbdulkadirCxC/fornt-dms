@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { patientsApi } from '../api/services';
+import SearchableSelect from './SearchableSelect';
 import './InvoiceForm.css';
 
 const initialValues = {
@@ -37,6 +38,15 @@ export default function InvoiceForm({ onSubmit, onCancel, initialData = null, di
     loadPatients();
   }, []);
 
+  const patientOptions = useMemo(
+    () =>
+      patients.map((p) => ({
+        value: p.id ?? p.patientId,
+        label: getPatientLabel(p),
+      })),
+    [patients]
+  );
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -72,50 +82,49 @@ export default function InvoiceForm({ onSubmit, onCancel, initialData = null, di
 
       {error && <div className="invoice-form-error">{error}</div>}
 
-      <div className="form-group">
-        <label htmlFor="patient">Patient</label>
-        <select
-          id="patient"
-          name="patient"
-          value={formData.patient}
-          onChange={handleChange}
-        >
-          <option value="">Select patient</option>
-          {patients.map((p) => (
-            <option key={p.id ?? p.patientId} value={p.id ?? p.patientId}>
-              {getPatientLabel(p)}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="form-grid-row form-grid-row--3">
+        <div className="form-group">
+          <label htmlFor="patient">Patient</label>
+          <SearchableSelect
+            id="patient"
+            name="patient"
+            value={formData.patient}
+            onChange={handleChange}
+            options={patientOptions}
+            disabled={disabled}
+            emptyOptionLabel="Select patient"
+            searchPlaceholder="Search patients…"
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="total_amount">Total Amount</label>
-        <input
-          type="number"
-          id="total_amount"
-          name="total_amount"
-          min="0"
-          step="0.01"
-          value={formData.total_amount ?? ''}
-          onChange={handleChange}
-          placeholder="0.00"
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="total_amount">Total Amount</label>
+          <input
+            type="number"
+            id="total_amount"
+            name="total_amount"
+            min="0"
+            step="0.01"
+            value={formData.total_amount ?? ''}
+            onChange={handleChange}
+            placeholder="0.00"
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="status">Status</label>
-        <select
-          id="status"
-          name="status"
-          value={formData.status ?? 'pending'}
-          onChange={handleChange}
-        >
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
-          <option value="partially_paid">Partially Paid</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <div className="form-group">
+          <label htmlFor="status">Status</label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status ?? 'pending'}
+            onChange={handleChange}
+          >
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="partially_paid">Partially Paid</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       <div className="form-actions">

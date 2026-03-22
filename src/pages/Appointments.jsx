@@ -9,6 +9,8 @@ export default function Appointments() {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   const fetchAppointments = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -82,6 +84,30 @@ export default function Appointments() {
     (apt.dentist && (apt.dentist.name ?? apt.dentist.full_name)) ??
     '—';
 
+  const statusCanMarkComplete = (status) => {
+    const s = (status ?? '').toLowerCase();
+    return s !== 'completed' && s !== 'cancelled';
+  };
+
+  const handleMarkComplete = async (appointmentId) => {
+    if (appointmentId == null) return;
+    setActionError(null);
+    setUpdatingId(appointmentId);
+    try {
+      await appointmentsApi.updateStatus(appointmentId, { status: 'completed' });
+      await fetchAppointments(true);
+    } catch (err) {
+      const msg =
+        err.response?.data?.detail ??
+        err.response?.data?.message ??
+        err.response?.data?.error ??
+        'Could not update appointment status.';
+      setActionError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="appointments-page">
       <div className="page-header">
@@ -97,6 +123,7 @@ export default function Appointments() {
       </div>
 
       {error && <div className="page-error">{error}</div>}
+      {actionError && <div className="page-error appointments-action-error">{actionError}</div>}
 
       {showForm && (
         <div className="appointment-form-modal">
@@ -122,29 +149,50 @@ export default function Appointments() {
                 <th>Time</th>
                 <th>Status</th>
                 <th>Notes</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {appointments.length === 0 ? (
                 <tr>
-                  <td colSpan={7}>No appointments found. Add an appointment using the form above.</td>
+                  <td colSpan={8}>No appointments found. Add an appointment using the form above.</td>
                 </tr>
               ) : (
-                appointments.map((apt) => (
-                  <tr key={apt.id ?? apt.appointmentId}>
-                    <td>{apt.id ?? apt.appointmentId ?? '—'}</td>
-                    <td>{getPatientName(apt)}</td>
-                    <td>{getDentistName(apt)}</td>
-                    <td>{formatDate(apt.date ?? apt.appointment_date)}</td>
-                    <td>{formatTime(apt.time ?? apt.appointment_time ?? apt.start_time) || '—'}</td>
-                    <td>
-                      <span className={`status-badge ${(apt.status ?? '').toLowerCase()}`}>
-                        {apt.status ?? 'Scheduled'}
-                      </span>
-                    </td>
-                    <td>{apt.notes ?? '—'}</td>
-                  </tr>
-                ))
+                appointments.map((apt) => {
+                  const id = apt.id ?? apt.appointmentId;
+                  const status = apt.status ?? '';
+                  const busy = updatingId === id;
+                  const showComplete = statusCanMarkComplete(status);
+                  return (
+                    <tr key={id}>
+                      <td>{id ?? '—'}</td>
+                      <td>{getPatientName(apt)}</td>
+                      <td>{getDentistName(apt)}</td>
+                      <td>{formatDate(apt.date ?? apt.appointment_date)}</td>
+                      <td>{formatTime(apt.time ?? apt.appointment_time ?? apt.start_time) || '—'}</td>
+                      <td>
+                        <span className={`status-badge ${(status || 'scheduled').toLowerCase()}`}>
+                          {status || 'Scheduled'}
+                        </span>
+                      </td>
+                      <td>{apt.notes ?? '—'}</td>
+                      <td>
+                        {showComplete ? (
+                          <button
+                            type="button"
+                            className="btn-appointment-complete"
+                            disabled={busy}
+                            onClick={() => handleMarkComplete(id)}
+                          >
+                            {busy ? 'Updating…' : 'Mark complete'}
+                          </button>
+                        ) : (
+                          <span className="appointments-action-muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
