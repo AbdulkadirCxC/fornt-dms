@@ -213,14 +213,18 @@
 }
 
 .invoices-table th {
-  background: #f8fafc;
-  color: #334155;
+  background: #0f766e;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .invoices-table tbody tr:hover {
-  background: #f8fafc;
+  background: #0f766e;
+}
+
+.invoices-table tbody tr:hover td {
+  color: #ffffff;
 }
 
 .invoices-table .status-badge {
@@ -293,7 +297,7 @@
 }
 
 .btn-voucher-print:hover {
-  background: #f8fafc;
+  background: #0f766e;
   border-color: #94a3b8;
 }
 

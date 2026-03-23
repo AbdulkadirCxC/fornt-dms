@@ -67,7 +67,7 @@
 .recent-section h2 {
   margin: 0 0 1rem;
   font-size: 1.1rem;
-  color: #334155;
+  color: #0f766e;
 }
 
 .dashboard-action-error {
@@ -97,8 +97,8 @@
 }
 
 .recent-table th {
-  background: #f8fafc;
-  color: #334155;
+  background: #0f766e;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.85rem;
 }

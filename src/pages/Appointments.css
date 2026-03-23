@@ -67,14 +67,18 @@
 }
 
 .appointments-table th {
-  background: #f8fafc;
-  color: #334155;
+  background: #0f766e;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .appointments-table tbody tr:hover {
-  background: #f8fafc;
+  background: #0f766e;
+}
+
+.appointments-table tbody tr:hover td {
+  color: #ffffff;
 }
 
 .status-badge {

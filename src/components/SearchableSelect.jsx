@@ -16,6 +16,7 @@ export default function SearchableSelect({
   emptyOptionLabel = 'Select…',
   searchPlaceholder = 'Search…',
   showEmptyOption = true,
+  dropdownActions = [],
 }) {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState('');
@@ -131,6 +132,25 @@ export default function SearchableSelect({
               ))
             )}
           </ul>
+          {Array.isArray(dropdownActions) && dropdownActions.length > 0 && (
+            <div className="searchable-select-actions">
+              {dropdownActions.map((action, idx) => (
+                <button
+                  key={`${action.label}-${idx}`}
+                  type="button"
+                  className={`searchable-select-action ${action.className ?? ''}`.trim()}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setOpen(false);
+                    setFilter('');
+                    action.onClick?.();
+                  }}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -110,3 +110,26 @@
   font-size: 0.9rem;
   text-align: center;
 }
+
+.searchable-select-actions {
+  border-top: 1px solid #e2e8f0;
+  padding: 0.35rem;
+  background: #fcfffe;
+}
+
+.searchable-select-action {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-radius: 6px;
+  color: #0f766e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.searchable-select-action:hover {
+  background: #ecfdf5;
+}

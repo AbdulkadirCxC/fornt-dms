@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import PermissionRoute from './components/PermissionRoute';
+import { PermissionProvider } from './auth/PermissionContext';
+import { ROUTE_PERMISSIONS } from './auth/permissionRules';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -12,34 +15,38 @@ import Invoices from './pages/Invoices';
 import Payments from './pages/Payments';
 import Appointments from './pages/Appointments';
 import Reports from './pages/Reports';
+import RolesPermissions from './pages/RolesPermissions';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="dentists" element={<Dentists />} />
-          <Route path="patients" element={<Patients />} />
-          <Route path="treatments" element={<Treatments />} />
-          <Route path="patient-treatments" element={<PatientTreatments />} />
-          <Route path="invoices" element={<Invoices />} />
-          <Route path="payments" element={<Payments />} />
-          <Route path="appointments" element={<Appointments />} />
-          <Route path="reports" element={<Reports />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <PermissionProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="register" element={<PermissionRoute required={ROUTE_PERMISSIONS['/register']}><Register /></PermissionRoute>} />
+            <Route path="dentists" element={<PermissionRoute required={ROUTE_PERMISSIONS['/dentists']}><Dentists /></PermissionRoute>} />
+            <Route path="patients" element={<PermissionRoute required={ROUTE_PERMISSIONS['/patients']}><Patients /></PermissionRoute>} />
+            <Route path="treatments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/treatments']}><Treatments /></PermissionRoute>} />
+            <Route path="patient-treatments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/patient-treatments']}><PatientTreatments /></PermissionRoute>} />
+            <Route path="invoices" element={<PermissionRoute required={ROUTE_PERMISSIONS['/invoices']}><Invoices /></PermissionRoute>} />
+            <Route path="payments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/payments']}><Payments /></PermissionRoute>} />
+            <Route path="appointments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/appointments']}><Appointments /></PermissionRoute>} />
+            <Route path="reports" element={<PermissionRoute required={ROUTE_PERMISSIONS['/reports']}><Reports /></PermissionRoute>} />
+            <Route path="roles-permissions" element={<PermissionRoute required={ROUTE_PERMISSIONS['/roles-permissions']}><RolesPermissions /></PermissionRoute>} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </PermissionProvider>
   );
 }
 

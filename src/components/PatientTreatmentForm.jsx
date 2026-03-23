@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { patientsApi, treatmentsApi, dentistsApi } from '../api/services';
 import SearchableSelect from './SearchableSelect';
+import PatientForm from './PatientForm';
 import './PatientTreatmentForm.css';
 
 function newLine() {
@@ -40,6 +41,9 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
   const [dentists, setDentists] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [quickCreateOpen, setQuickCreateOpen] = useState(false);
+  const [quickCreateSaving, setQuickCreateSaving] = useState(false);
+  const [quickCreateError, setQuickCreateError] = useState('');
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -167,12 +171,37 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
     onSubmit(payload);
   };
 
+  const handleQuickCreatePatient = async (payload) => {
+    setQuickCreateError('');
+    setQuickCreateSaving(true);
+    try {
+      const res = await patientsApi.create(payload);
+      const created = res?.data ?? {};
+      const createdId = created.id ?? created.patientId ?? created.patient_id;
+      if (createdId == null) {
+        throw new Error('No patient id in response');
+      }
+      setPatients((prev) => [created, ...prev]);
+      setPatient(String(createdId));
+      setQuickCreateOpen(false);
+    } catch (err) {
+      const msg =
+        err.response?.data?.detail ??
+        err.response?.data?.message ??
+        'Failed to create patient.';
+      setQuickCreateError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    } finally {
+      setQuickCreateSaving(false);
+    }
+  };
+
   if (loading) {
     return <div className="patient-treatment-form-loading">Loading options...</div>;
   }
 
   return (
-    <form className="patient-treatment-form" onSubmit={handleSubmit}>
+    <>
+      <form className="patient-treatment-form" onSubmit={handleSubmit}>
       <h3>Add patient treatments</h3>
       <p className="patient-treatment-form-hint">
         One visit: choose patient, dentist, and date once, then add one row per treatment. Submitting
@@ -191,6 +220,15 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
             value={patient}
             onChange={handlePatientChange}
             options={patientOptions}
+            dropdownActions={[
+              {
+                label: '+ Quick create patient',
+                onClick: () => {
+                  setQuickCreateError('');
+                  setQuickCreateOpen(true);
+                },
+              },
+            ]}
             required
             disabled={disabled}
             emptyOptionLabel="Select patient"
@@ -299,6 +337,33 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
           </button>
         )}
       </div>
-    </form>
+
+      </form>
+      {quickCreateOpen && (
+        <div className="quick-patient-modal-root" role="dialog" aria-modal="true" aria-labelledby="quick-patient-title">
+          <div className="quick-patient-modal-backdrop" onClick={() => !quickCreateSaving && setQuickCreateOpen(false)} />
+          <div className="quick-patient-modal-panel">
+            <div className="quick-patient-modal-header">
+              <h4 id="quick-patient-title">Quick Create Patient</h4>
+              <button
+                type="button"
+                className="quick-patient-modal-close"
+                disabled={quickCreateSaving}
+                onClick={() => setQuickCreateOpen(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            {quickCreateError && <div className="quick-patient-error">{quickCreateError}</div>}
+            <PatientForm
+              onSubmit={handleQuickCreatePatient}
+              onCancel={() => setQuickCreateOpen(false)}
+              disabled={disabled || quickCreateSaving}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

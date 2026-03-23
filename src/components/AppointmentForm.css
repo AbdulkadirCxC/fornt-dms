@@ -144,3 +144,81 @@
 .appointment-form .form-actions .btn-cancel:hover {
   background: #e2e8f0;
 }
+
+.quick-create-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-create-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.46);
+}
+
+.quick-create-modal-panel {
+  position: relative;
+  width: min(560px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+}
+
+.quick-create-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quick-create-modal-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.quick-create-modal-close {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 1.35rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.quick-create-modal-close:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.quick-create-modal-close:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quick-create-error {
+  margin: 0.85rem 1rem 0;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+/* Reuse embedded forms in modal without nested card style. */
+.quick-create-modal-panel .patient-form,
+.quick-create-modal-panel .dentist-form {
+  box-shadow: none;
+  border-radius: 0;
+  max-width: none;
+}

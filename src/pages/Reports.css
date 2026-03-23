@@ -20,14 +20,16 @@
 }
 
 .reports-page .report-selector,
-.reports-page .date-filter {
+.reports-page .date-filter,
+.reports-page .report-reload {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
 .reports-page .report-selector label,
-.reports-page .date-filter label {
+.reports-page .date-filter label,
+.reports-page .report-reload label {
   font-size: 0.85rem;
   font-weight: 500;
   color: #475569;
@@ -37,11 +39,73 @@
   min-width: 260px;
 }
 
+.reports-page .report-selector--patient .searchable-select {
+  min-width: 300px;
+}
+
 .reports-page .date-filter input {
   padding: 0.5rem 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 0.95rem;
+}
+
+.reports-page .btn-report-reload {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #0d9488;
+  border-radius: 6px;
+  background: #0d9488;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 96px;
+}
+
+.reports-page .btn-report-reload:hover:not(:disabled) {
+  background: #0f766e;
+  border-color: #0f766e;
+}
+
+.reports-page .btn-report-reload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reports-page .report-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reports-page .btn-report-print {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 86px;
+}
+
+.reports-page .btn-report-print:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.reports-page .btn-report-print:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reports-page .page-note {
+  background: #eff6ff;
+  color: #1e40af;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #bfdbfe;
 }
 
 .reports-page .page-error {
@@ -50,6 +114,52 @@
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.statement-summary-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+}
+
+.statement-summary-patient h3 {
+  margin: 0 0 0.5rem;
+  color: #0f172a;
+}
+
+.statement-summary-patient p {
+  margin: 0.2rem 0;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.statement-summary-totals {
+  min-width: 230px;
+}
+
+.statement-summary-totals p {
+  margin: 0.35rem 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #334155;
+  font-size: 0.92rem;
+}
+
+.statement-summary-totals p strong {
+  color: #0f172a;
+}
+
+@media (max-width: 900px) {
+  .statement-summary-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 .reports-table-wrap {
@@ -72,12 +182,58 @@
 }
 
 .reports-table th {
-  background: #f8fafc;
-  color: #334155;
+  background: #0f766e;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .reports-table tbody tr:hover {
   background: #f8fafc;
+}
+
+.reports-table.customer-statement-ledger {
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.reports-table.customer-statement-ledger th,
+.reports-table.customer-statement-ledger td {
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.reports-table.customer-statement-ledger th {
+  background: #0f766e;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.reports-table.customer-statement-ledger tbody td {
+  background: #f8fafc;
+}
+
+.reports-table.customer-statement-ledger tbody tr:nth-child(even) td {
+  background: #f1f5f9;
+}
+
+.reports-table.customer-statement-ledger tbody tr:hover td {
+  background: #e2e8f0;
+}
+
+.reports-table.customer-statement-ledger td:nth-child(5),
+.reports-table.customer-statement-ledger td:nth-child(6),
+.reports-table.customer-statement-ledger td:nth-child(7) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.reports-table.customer-statement-ledger th:nth-child(5),
+.reports-table.customer-statement-ledger th:nth-child(6),
+.reports-table.customer-statement-ledger th:nth-child(7) {
+  text-align: right;
 }

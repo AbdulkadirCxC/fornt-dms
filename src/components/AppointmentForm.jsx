@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { patientsApi, dentistsApi } from '../api/services';
 import SearchableSelect from './SearchableSelect';
+import PatientForm from './PatientForm';
+import DentistForm from './DentistForm';
 import './AppointmentForm.css';
 
 function patientLabel(p) {
@@ -47,6 +49,10 @@ export default function AppointmentForm({
   const [dentists, setDentists] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [quickPatientOpen, setQuickPatientOpen] = useState(false);
+  const [quickDentistOpen, setQuickDentistOpen] = useState(false);
+  const [quickSaving, setQuickSaving] = useState(false);
+  const [quickCreateError, setQuickCreateError] = useState('');
 
   useEffect(() => {
     const loadOptions = async () => {
@@ -130,12 +136,57 @@ export default function AppointmentForm({
     onSubmit(payload);
   };
 
+  const handleQuickCreatePatient = async (payload) => {
+    setQuickCreateError('');
+    setQuickSaving(true);
+    try {
+      const res = await patientsApi.create(payload);
+      const created = res?.data ?? {};
+      const createdId = created.id ?? created.patientId ?? created.patient_id;
+      if (createdId == null) throw new Error('No patient ID in response');
+      setPatients((prev) => sortPatientsByIdDesc([created, ...prev]));
+      setFormData((prev) => ({ ...prev, patient: String(createdId) }));
+      setQuickPatientOpen(false);
+    } catch (err) {
+      const msg =
+        err.response?.data?.detail ??
+        err.response?.data?.message ??
+        'Failed to create patient.';
+      setQuickCreateError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    } finally {
+      setQuickSaving(false);
+    }
+  };
+
+  const handleQuickCreateDentist = async (payload) => {
+    setQuickCreateError('');
+    setQuickSaving(true);
+    try {
+      const res = await dentistsApi.create(payload);
+      const created = res?.data ?? {};
+      const createdId = created.id ?? created.dentistId ?? created.dentist_id;
+      if (createdId == null) throw new Error('No dentist ID in response');
+      setDentists((prev) => [created, ...prev]);
+      setFormData((prev) => ({ ...prev, dentist: String(createdId) }));
+      setQuickDentistOpen(false);
+    } catch (err) {
+      const msg =
+        err.response?.data?.detail ??
+        err.response?.data?.message ??
+        'Failed to create dentist.';
+      setQuickCreateError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+    } finally {
+      setQuickSaving(false);
+    }
+  };
+
   if (loading) {
     return <div className="appointment-form-loading">Loading patients and dentists...</div>;
   }
 
   return (
-    <form className="appointment-form" onSubmit={handleSubmit}>
+    <>
+      <form className="appointment-form" onSubmit={handleSubmit}>
       <h3>{initialData ? 'Edit Appointment' : 'Add Appointment'}</h3>
 
       {error && <div className="appointment-form-error">{error}</div>}
@@ -155,6 +206,15 @@ export default function AppointmentForm({
               value={formData.patient}
               onChange={handleChange}
               options={patientOptions}
+              dropdownActions={[
+                {
+                  label: '+ Quick create patient',
+                  onClick: () => {
+                    setQuickCreateError('');
+                    setQuickPatientOpen(true);
+                  },
+                },
+              ]}
               required
               disabled={disabled}
               emptyOptionLabel="Select patient"
@@ -171,6 +231,15 @@ export default function AppointmentForm({
             value={formData.dentist}
             onChange={handleChange}
             options={dentistOptions}
+            dropdownActions={[
+              {
+                label: '+ Quick create dentist',
+                onClick: () => {
+                  setQuickCreateError('');
+                  setQuickDentistOpen(true);
+                },
+              },
+            ]}
             disabled={disabled}
             emptyOptionLabel="Select dentist"
             searchPlaceholder="Search dentists…"
@@ -241,6 +310,59 @@ export default function AppointmentForm({
           </button>
         )}
       </div>
-    </form>
+      </form>
+
+      {quickPatientOpen && (
+        <div className="quick-create-modal-root" role="dialog" aria-modal="true" aria-labelledby="quick-create-patient-title">
+          <div className="quick-create-modal-backdrop" onClick={() => !quickSaving && setQuickPatientOpen(false)} />
+          <div className="quick-create-modal-panel">
+            <div className="quick-create-modal-header">
+              <h4 id="quick-create-patient-title">Quick Create Patient</h4>
+              <button
+                type="button"
+                className="quick-create-modal-close"
+                disabled={quickSaving}
+                onClick={() => setQuickPatientOpen(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            {quickCreateError && <div className="quick-create-error">{quickCreateError}</div>}
+            <PatientForm
+              onSubmit={handleQuickCreatePatient}
+              onCancel={() => setQuickPatientOpen(false)}
+              disabled={disabled || quickSaving}
+            />
+          </div>
+        </div>
+      )}
+
+      {quickDentistOpen && (
+        <div className="quick-create-modal-root" role="dialog" aria-modal="true" aria-labelledby="quick-create-dentist-title">
+          <div className="quick-create-modal-backdrop" onClick={() => !quickSaving && setQuickDentistOpen(false)} />
+          <div className="quick-create-modal-panel">
+            <div className="quick-create-modal-header">
+              <h4 id="quick-create-dentist-title">Quick Create Dentist</h4>
+              <button
+                type="button"
+                className="quick-create-modal-close"
+                disabled={quickSaving}
+                onClick={() => setQuickDentistOpen(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            {quickCreateError && <div className="quick-create-error">{quickCreateError}</div>}
+            <DentistForm
+              onSubmit={handleQuickCreateDentist}
+              onCancel={() => setQuickDentistOpen(false)}
+              disabled={disabled || quickSaving}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

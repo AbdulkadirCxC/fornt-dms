@@ -8,3 +8,5 @@ export { invoicesApi } from './invoices';
 export { paymentsApi } from './payments';
 export { reportsApi } from './reports';
 export { authApi } from './auth';
+export { rolesApi } from './roles';
+export { usersApi } from './users';
