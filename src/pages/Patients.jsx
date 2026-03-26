@@ -18,7 +18,9 @@ export default function Patients() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingPatient, setEditingPatient] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [appointmentForPatient, setAppointmentForPatient] = useState(null);
   const [submittingAppointment, setSubmittingAppointment] = useState(false);
 
@@ -70,6 +72,42 @@ export default function Patients() {
     }
   };
 
+  const handleUpdatePatient = async (payload) => {
+    const patientId = editingPatient?.id ?? editingPatient?.patientId;
+    if (!patientId) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await patientsApi.update(patientId, payload);
+      setEditingPatient(null);
+      await fetchPatients(true);
+    } catch (err) {
+      setError(err.response?.data?.message ?? err.response?.data?.detail ?? 'Failed to update patient.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeletePatient = async (patient) => {
+    const patientId = patient?.id ?? patient?.patientId;
+    if (!patientId) return;
+    const ok = window.confirm(`Delete patient "${patient.full_name ?? 'Unknown'}"?`);
+    if (!ok) return;
+    setDeletingId(patientId);
+    setError(null);
+    try {
+      await patientsApi.delete(patientId);
+      if ((editingPatient?.id ?? editingPatient?.patientId) === patientId) {
+        setEditingPatient(null);
+      }
+      await fetchPatients(true);
+    } catch (err) {
+      setError(err.response?.data?.message ?? err.response?.data?.detail ?? 'Failed to delete patient.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleAppointmentSubmit = async (payload) => {
     setSubmittingAppointment(true);
     setError(null);
@@ -110,6 +148,7 @@ export default function Patients() {
             className="btn-add"
             onClick={() => {
               setAppointmentForPatient(null);
+              setEditingPatient(null);
               setShowForm(true);
             }}
           >
@@ -125,6 +164,22 @@ export default function Patients() {
           <PatientForm
             onSubmit={handleFormSubmit}
             onCancel={() => setShowForm(false)}
+            disabled={submitting}
+          />
+        </div>
+      )}
+
+      {editingPatient && (
+        <div className="patient-form-modal">
+          <PatientForm
+            initialData={{
+              full_name: editingPatient.full_name ?? '',
+              gender: editingPatient.gender ?? '',
+              date_of_birth: editingPatient.date_of_birth ?? '',
+              phone: editingPatient.phone ?? '',
+            }}
+            onSubmit={handleUpdatePatient}
+            onCancel={() => setEditingPatient(null)}
             disabled={submitting}
           />
         </div>
@@ -172,19 +227,41 @@ export default function Patients() {
                     <td>{p.date_of_birth ?? '—'}</td>
                     <td>{p.phone ?? '—'}</td>
                     <td>
-                      <button
-                        type="button"
-                        className="btn-patient-appt"
-                        onClick={() => {
-                          setShowForm(false);
-                          setAppointmentForPatient({
-                            id: p.id ?? p.patientId,
-                            full_name: p.full_name,
-                          });
-                        }}
-                      >
-                        Appointment
-                      </button>
+                      <div className="patient-row-actions">
+                        <button
+                          type="button"
+                          className="btn-patient-appt"
+                          onClick={() => {
+                            setShowForm(false);
+                            setEditingPatient(null);
+                            setAppointmentForPatient({
+                              id: p.id ?? p.patientId,
+                              full_name: p.full_name,
+                            });
+                          }}
+                        >
+                          Appointment
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-patient-edit"
+                          onClick={() => {
+                            setShowForm(false);
+                            setAppointmentForPatient(null);
+                            setEditingPatient(p);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-patient-delete"
+                          disabled={deletingId === (p.id ?? p.patientId)}
+                          onClick={() => handleDeletePatient(p)}
+                        >
+                          {deletingId === (p.id ?? p.patientId) ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

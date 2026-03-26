@@ -11,6 +11,8 @@ import Dentists from './pages/Dentists';
 import Patients from './pages/Patients';
 import Treatments from './pages/Treatments';
 import PatientTreatments from './pages/PatientTreatments';
+import PatientRecalls from './pages/PatientRecalls';
+import RecallNotifications from './pages/RecallNotifications';
 import Invoices from './pages/Invoices';
 import Payments from './pages/Payments';
 import Appointments from './pages/Appointments';
@@ -37,6 +39,8 @@ function App() {
             <Route path="patients" element={<PermissionRoute required={ROUTE_PERMISSIONS['/patients']}><Patients /></PermissionRoute>} />
             <Route path="treatments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/treatments']}><Treatments /></PermissionRoute>} />
             <Route path="patient-treatments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/patient-treatments']}><PatientTreatments /></PermissionRoute>} />
+            <Route path="patient-recalls" element={<PermissionRoute required={ROUTE_PERMISSIONS['/patient-recalls']}><PatientRecalls /></PermissionRoute>} />
+            <Route path="recall-notifications" element={<PermissionRoute required={ROUTE_PERMISSIONS['/recall-notifications']}><RecallNotifications /></PermissionRoute>} />
             <Route path="invoices" element={<PermissionRoute required={ROUTE_PERMISSIONS['/invoices']}><Invoices /></PermissionRoute>} />
             <Route path="payments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/payments']}><Payments /></PermissionRoute>} />
             <Route path="appointments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/appointments']}><Appointments /></PermissionRoute>} />

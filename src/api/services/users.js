@@ -6,7 +6,7 @@ import apiClient from '../client';
  */
 export const usersApi = {
   getAll: (params = {}) => apiClient.get('/users/', { params }),
-  update: (id, payload) => apiClient.patch(`/users/${id}/`, payload),
+  update: (id, payload, config = {}) => apiClient.patch(`/users/${id}/`, payload, config),
   remove: (id) => apiClient.delete(`/users/${id}/`),
 };
 

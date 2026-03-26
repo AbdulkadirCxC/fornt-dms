@@ -1,0 +1,159 @@
+.patient-recalls-page h1 {
+  margin: 0 0 0.25rem;
+  color: #0f766e;
+  font-size: 1.75rem;
+}
+
+.patient-recalls-page .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.patient-recalls-page .btn-add {
+  padding: 0.5rem 1rem;
+  background: #0d9488;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.patient-recalls-page .btn-add:hover {
+  background: #0f766e;
+}
+
+.patient-recalls-page .page-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.recall-form-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.recall-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.recall-form .form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.88rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.recall-form .form-group input {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.recall-form .form-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.recall-form .btn-submit,
+.recall-form .btn-cancel {
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recall-form .btn-submit {
+  background: #0d9488;
+  color: #fff;
+}
+
+.recall-form .btn-submit:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.recall-form .btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.recalls-table-wrap {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.recalls-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recalls-table th,
+.recalls-table td {
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+.recalls-table th {
+  background: #0f766e;
+  color: #fff;
+  font-size: 0.82rem;
+}
+
+.recalls-table tbody tr:hover {
+  background: #0f766e;
+}
+
+.recalls-table tbody tr:hover td {
+  color: #fff;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #0d9488;
+  color: #fff;
+}
+
+.btn-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 1200px) {
+  .recall-form .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+

@@ -42,6 +42,10 @@ function statusCanMarkComplete(status) {
   return s !== 'completed' && s !== 'cancelled';
 }
 
+function isScheduledStatus(status) {
+  return (status ?? '').toLowerCase() === 'scheduled';
+}
+
 function formatCurrency(val) {
   if (val == null || val === '') return '0.00';
   const num = typeof val === 'number' ? val : parseFloat(val);
@@ -118,6 +122,10 @@ export default function Dashboard() {
     }
   };
 
+  const scheduledAppointments = data.recent_appointments.filter((apt) =>
+    isScheduledStatus(apt.status ?? apt.appointment_status)
+  );
+
   return (
     <div className="dashboard">
       <h1>Dashboard</h1>
@@ -180,7 +188,7 @@ export default function Dashboard() {
         {actionError && <div className="dashboard-action-error">{actionError}</div>}
         {data.loading ? (
           <p>Loading...</p>
-        ) : data.recent_appointments.length === 0 ? (
+        ) : scheduledAppointments.length === 0 ? (
           <p className="empty-state">No appointments yet. Create one from the Appointments page.</p>
         ) : (
           <div className="recent-table-wrap">
@@ -196,7 +204,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {data.recent_appointments.map((apt) => {
+                {scheduledAppointments.map((apt) => {
                   const id = apt.id ?? apt.appointmentId;
                   const status = apt.status ?? '';
                   const busy = updatingId === id;

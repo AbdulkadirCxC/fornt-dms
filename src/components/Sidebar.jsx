@@ -11,6 +11,8 @@ const navItems = [
   { to: '/patients', label: 'Patients', icon: '👥' },
   { to: '/treatments', label: 'Treatments', icon: '💊' },
   { to: '/patient-treatments', label: 'Patient Treatments', icon: '📋' },
+  { to: '/patient-recalls', label: 'Patient Recalls', icon: '🔔' },
+  { to: '/recall-notifications', label: 'Recall Notifications', icon: '🔕' },
   { to: '/invoices', label: 'Invoices', icon: '🧾' },
   { to: '/payments', label: 'Payments', icon: '💳' },
   { to: '/appointments', label: 'Appointments', icon: '📅' },
@@ -20,8 +22,15 @@ const navItems = [
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { hasAnyPermission } = usePermissions();
+  const { hasAnyPermission, currentUser, isSuperuser } = usePermissions();
   const allowedItems = navItems.filter((item) => hasAnyPermission(ROUTE_PERMISSIONS[item.to] ?? []));
+  const userName = currentUser?.username ?? '—';
+  const userInitial = userName && userName !== '—' ? userName.charAt(0).toUpperCase() : '?';
+  const roleText = isSuperuser
+    ? 'Super Admin'
+    : currentUser?.is_staff
+      ? 'Staff'
+      : currentUser?.roles?.[0]?.name ?? 'User';
 
   const handleLogoReload = () => {
     window.location.reload();
@@ -44,6 +53,19 @@ export default function Sidebar() {
         <span className="dms-logo">🦷</span>
         <h1 className="dms-brand">DMS</h1>
       </button>
+      {currentUser && (
+        <div className="dms-user-panel">
+          <div className="dms-user-main">
+            <div className="dms-user-meta">
+              <p className="dms-user-name">{userName}</p>
+              <p className="dms-user-role">{roleText}</p>
+            </div>
+            <div className="dms-user-avatar" aria-label="Logged in user avatar">
+              {userInitial}
+            </div>
+          </div>
+        </div>
+      )}
       <nav className="dms-nav">
         {allowedItems.map(({ to, label, icon }) => (
           <NavLink

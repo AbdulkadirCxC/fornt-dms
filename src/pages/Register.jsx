@@ -29,6 +29,10 @@ function getUserType(user) {
   return 'User';
 }
 
+function getUserImageUrl(user) {
+  return user?.image ?? user?.avatar ?? user?.profile_image ?? user?.photo ?? '';
+}
+
 export default function Register() {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -43,6 +47,10 @@ export default function Register() {
     is_staff: false,
     is_superuser: false,
   });
+  const [addImageFile, setAddImageFile] = useState(null);
+  const [addImagePreview, setAddImagePreview] = useState('');
+  const [editImageFile, setEditImageFile] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState('');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -51,6 +59,12 @@ export default function Register() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const toggleAddForm = (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    setShowForm((v) => !v);
+  };
 
   const fetchUsers = async (silent = false) => {
     if (!silent) setLoadingUsers(true);
@@ -93,6 +107,8 @@ export default function Register() {
       is_staff: Boolean(u.is_staff),
       is_superuser: Boolean(u.is_superuser),
     });
+    setEditImageFile(null);
+    setEditImagePreview(getUserImageUrl(u));
   };
 
   const cancelEdit = () => {
@@ -105,6 +121,8 @@ export default function Register() {
       is_staff: false,
       is_superuser: false,
     });
+    setEditImageFile(null);
+    setEditImagePreview('');
   };
 
   const handleEditChange = (e) => {
@@ -135,22 +153,26 @@ export default function Register() {
     }
 
     const emailTrim = formData.email.trim();
-    const payload = {
-      username,
-      password: formData.password,
-      password_confirm: formData.password_confirm,
-    };
-    if (emailTrim) payload.email = emailTrim;
+    const payload = new FormData();
+    payload.append('username', username);
+    payload.append('password', formData.password);
+    payload.append('password_confirm', formData.password_confirm);
+    if (emailTrim) payload.append('email', emailTrim);
+    if (addImageFile) payload.append('image', addImageFile);
 
     setLoading(true);
     try {
-      await authApi.register(payload);
+      await authApi.register(payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       setFormData({
         username: '',
         email: '',
         password: '',
         password_confirm: '',
       });
+      setAddImageFile(null);
+      setAddImagePreview('');
       setShowForm(false);
       await fetchUsers(true);
     } catch (err) {
@@ -171,12 +193,15 @@ export default function Register() {
     setError('');
     setEditing(true);
     try {
-      await usersApi.update(editingUser, {
-        username,
-        email: editData.email.trim() || '',
-        is_active: editData.is_active,
-        is_staff: editData.is_staff,
-        is_superuser: editData.is_superuser,
+      const payload = new FormData();
+      payload.append('username', username);
+      payload.append('email', editData.email.trim() || '');
+      payload.append('is_active', String(editData.is_active));
+      payload.append('is_staff', String(editData.is_staff));
+      payload.append('is_superuser', String(editData.is_superuser));
+      if (editImageFile) payload.append('image', editImageFile);
+      await usersApi.update(editingUser, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       cancelEdit();
       await fetchUsers(true);
@@ -185,6 +210,20 @@ export default function Register() {
     } finally {
       setEditing(false);
     }
+  };
+
+  const handleAddImageChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files?.[0] ?? null;
+    setAddImageFile(file);
+    setAddImagePreview(file ? URL.createObjectURL(file) : '');
+  };
+
+  const handleEditImageChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files?.[0] ?? null;
+    setEditImageFile(file);
+    setEditImagePreview(file ? URL.createObjectURL(file) : editImagePreview);
   };
 
   const handleDelete = async (u) => {
@@ -209,7 +248,7 @@ export default function Register() {
     <div className="register-page">
       <div className="page-header">
         <h1>Users</h1>
-        <button className="btn-add" onClick={() => setShowForm((v) => !v)}>
+        <button type="button" className="btn-add" onClick={toggleAddForm}>
           {showForm ? 'Close' : 'Add User'}
         </button>
       </div>
@@ -251,6 +290,15 @@ export default function Register() {
               placeholder="you@example.com"
               autoComplete="email"
             />
+          </div>
+          <div className="form-group">
+            <label htmlFor="image">User image</label>
+            <input type="file" id="image" name="image" accept="image/*" onChange={handleAddImageChange} />
+            {addImagePreview && (
+              <div className="user-image-preview-wrap">
+                <img src={addImagePreview} alt="New user preview" className="user-image-preview" />
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -318,6 +366,15 @@ export default function Register() {
                 placeholder="you@example.com"
               />
             </div>
+            <div className="form-group">
+              <label htmlFor="edit_image">User image</label>
+              <input type="file" id="edit_image" name="image" accept="image/*" onChange={handleEditImageChange} />
+              {editImagePreview && (
+                <div className="user-image-preview-wrap">
+                  <img src={editImagePreview} alt="Edit user preview" className="user-image-preview" />
+                </div>
+              )}
+            </div>
             <div className="register-check-grid">
               <label>
                 <input
@@ -367,6 +424,7 @@ export default function Register() {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Image</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th>User Type</th>
@@ -379,12 +437,19 @@ export default function Register() {
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={8}>No users found.</td>
+                  <td colSpan={9}>No users found.</td>
                 </tr>
               ) : (
                 users.map((u) => (
                   <tr key={u.id ?? u.user_id ?? u.username}>
                     <td>{u.id ?? u.user_id ?? '—'}</td>
+                    <td>
+                      {getUserImageUrl(u) ? (
+                        <img src={getUserImageUrl(u)} alt={`${u.username ?? 'User'} avatar`} className="user-avatar-cell" />
+                      ) : (
+                        <span className="user-avatar-empty">—</span>
+                      )}
+                    </td>
                     <td>{u.username ?? '—'}</td>
                     <td>{u.email ?? '—'}</td>
                     <td>

@@ -4,6 +4,8 @@ export { appointmentsApi } from './appointments';
 export { dentistsApi } from './dentists';
 export { treatmentsApi } from './treatments';
 export { patientTreatmentsApi } from './patientTreatments';
+export { patientRecallsApi } from './patientRecalls';
+export { recallNotificationsApi } from './recallNotifications';
 export { invoicesApi } from './invoices';
 export { paymentsApi } from './payments';
 export { reportsApi } from './reports';

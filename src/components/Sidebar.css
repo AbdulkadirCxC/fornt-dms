@@ -40,6 +40,56 @@
   letter-spacing: -0.5px;
 }
 
+.dms-user-panel {
+  margin: 0.75rem 1rem 0.25rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.dms-user-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.dms-user-meta {
+  min-width: 0;
+}
+
+.dms-user-name {
+  margin: 0;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dms-user-role {
+  margin: 0.1rem 0 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.78rem;
+}
+
+.dms-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  flex: 0 0 auto;
+}
+
 .dms-nav {
   display: flex;
   flex-direction: column;

@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { rolesApi, usersApi } from '../api/services';
+import { rolesApi } from '../api/services';
+import apiClient from '../api/client';
 import { AUTH_STATE_EVENT, tokenStorage } from '../api/tokenStorage';
 
 const PermissionContext = createContext({
   loading: false,
   permissions: new Set(),
   isSuperuser: false,
+  currentUser: null,
   hasAnyPermission: () => true,
 });
 
@@ -54,6 +56,7 @@ export function PermissionProvider({ children }) {
   const [permissions, setPermissions] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [isSuperuser, setIsSuperuser] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [authRevision, setAuthRevision] = useState(0);
 
   useEffect(() => {
@@ -79,12 +82,13 @@ export function PermissionProvider({ children }) {
     if (!access) {
       setPermissions(new Set());
       setIsSuperuser(false);
+      setCurrentUser(null);
       setLoading(false);
       return;
     }
 
     const payload = decodeJwtPayload(access);
-    const userId = extractUserId(payload);
+    let userId = extractUserId(payload);
     const tokenPermissions = extractTokenPermissions(payload);
     const initialSet = new Set(tokenPermissions.map(normalizeCode).filter(Boolean));
     const superFlag = Boolean(
@@ -100,18 +104,20 @@ export function PermissionProvider({ children }) {
     const loadPermissions = async () => {
       setLoading(true);
       try {
+        const meRes = await apiClient.get('/auth/me/');
+        const me = meRes?.data ?? null;
+        if (!cancelled) setCurrentUser(me);
+        if (me) {
+          userId = Number(me.id ?? me.user_id ?? me.pk) || userId;
+          if (!cancelled) {
+            setIsSuperuser(Boolean(me.is_superuser ?? me.isSuperuser ?? superFlag));
+          }
+        }
+
         const roleRes = userId ? await rolesApi.getUserRoles(userId) : null;
         const assignedRoles = normalizeList(roleRes?.data, ['roles']);
         const codenameSet = new Set(initialSet);
         const permissionIds = new Set();
-        if (!superFlag && userId) {
-          const usersRes = await usersApi.getAll({ limit: 500 });
-          const users = normalizeList(usersRes.data, ['users']);
-          const currentUser = users.find((u) => Number(u?.id ?? u?.user_id ?? u?.pk) === Number(userId));
-          if (currentUser && !cancelled) {
-            setIsSuperuser(Boolean(currentUser.is_superuser ?? currentUser.isSuperuser));
-          }
-        }
 
         assignedRoles.forEach((role) => {
           const perms = normalizeList(role?.permissions, ['permissions']);
@@ -143,7 +149,10 @@ export function PermissionProvider({ children }) {
 
         if (!cancelled) setPermissions(codenameSet);
       } catch {
-        if (!cancelled) setPermissions(initialSet);
+        if (!cancelled) {
+          setPermissions(initialSet);
+          setCurrentUser(null);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -164,8 +173,8 @@ export function PermissionProvider({ children }) {
       }
       return false;
     };
-    return { loading, permissions, isSuperuser, hasAnyPermission };
-  }, [loading, permissions, isSuperuser]);
+    return { loading, permissions, isSuperuser, currentUser, hasAnyPermission };
+  }, [loading, permissions, isSuperuser, currentUser]);
 
   return <PermissionContext.Provider value={value}>{children}</PermissionContext.Provider>;
 }

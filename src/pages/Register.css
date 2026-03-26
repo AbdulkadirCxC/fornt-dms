@@ -71,6 +71,11 @@
   font-size: 1rem;
 }
 
+.register-form .form-group input[type='file'] {
+  padding: 0.45rem 0.55rem;
+  background: #f8fafc;
+}
+
 .register-form .form-group input:focus {
   outline: none;
   border-color: #0d9488;
@@ -134,6 +139,30 @@
 
 .users-table tbody tr:hover {
   background: #f8fafc;
+}
+
+.user-image-preview-wrap {
+  margin-top: 0.55rem;
+}
+
+.user-image-preview {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+}
+
+.user-avatar-cell {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+}
+
+.user-avatar-empty {
+  color: #94a3b8;
 }
 
 .user-type-badge {

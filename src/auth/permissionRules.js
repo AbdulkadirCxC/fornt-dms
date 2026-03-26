@@ -5,6 +5,8 @@ export const ROUTE_PERMISSIONS = {
   '/patients': ['view_patient'],
   '/treatments': ['view_treatment'],
   '/patient-treatments': ['view_patient_treatment', 'view_patienttreatment'],
+  '/patient-recalls': ['view_patient_recall', 'view_patientrecall'],
+  '/recall-notifications': ['view_recall_notification', 'view_recallnotification'],
   '/invoices': ['view_invoice'],
   '/payments': ['view_payment'],
   '/appointments': ['view_appointment'],
