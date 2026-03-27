@@ -1,6 +1,7 @@
-export { patientsApi } from './patients';
+export { patientsApi, fetchAllPatientsForExport } from './patients';
 export { dashboardApi } from './dashboard';
 export { appointmentsApi } from './appointments';
+export { queueTicketsApi } from './queueTickets';
 export { dentistsApi } from './dentists';
 export { treatmentsApi } from './treatments';
 export { patientTreatmentsApi } from './patientTreatments';

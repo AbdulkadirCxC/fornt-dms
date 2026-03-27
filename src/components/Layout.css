@@ -1,10 +1,29 @@
 .dms-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .dms-main {
   flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   padding: 2rem;
   background: var(--dms-bg, #f8fafc);
+}
+
+/* Full-width waiting-room TV board (no sidebar). */
+.dms-layout--tv {
+  flex-direction: column;
+}
+
+.dms-main--tv {
+  padding: 0;
+  overflow: auto;
+  background: #0f172a;
 }

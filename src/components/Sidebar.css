@@ -1,11 +1,15 @@
 .dms-sidebar {
   width: 240px;
+  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
   background: linear-gradient(180deg, #0f766e 0%, #0d9488 100%);
   color: white;
   padding: 1.5rem 0;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .dms-sidebar-header {
@@ -14,6 +18,7 @@
   gap: 0.75rem;
   padding: 0 1.25rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
 .dms-sidebar-header-btn {
@@ -46,6 +51,7 @@
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
 }
 
 .dms-user-main {
@@ -76,8 +82,8 @@
 }
 
 .dms-user-avatar {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -88,6 +94,20 @@
   font-weight: 700;
   font-size: 0.82rem;
   flex: 0 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.dms-user-avatar--image {
+  padding: 0;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dms-user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .dms-nav {
@@ -96,6 +116,50 @@
   gap: 0.25rem;
   padding-top: 1rem;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* Auto-hide scrollbar until sidebar hover (Firefox) */
+  scrollbar-width: none;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.dms-sidebar:hover .dms-nav {
+  scrollbar-width: thin;
+}
+
+/* WebKit / Chromium: no track space until hover */
+.dms-nav::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.dms-sidebar:hover .dms-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dms-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dms-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+}
+
+.dms-sidebar:hover .dms-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.dms-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dms-nav::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .dms-nav-link {

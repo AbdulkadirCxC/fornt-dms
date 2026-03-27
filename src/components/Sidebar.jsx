@@ -1,8 +1,25 @@
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { tokenStorage } from '../api/tokenStorage';
 import { usePermissions } from '../auth/PermissionContext';
 import { ROUTE_PERMISSIONS } from '../auth/permissionRules';
 import './Sidebar.css';
+
+/** Matches `/auth/me/` and user list fields used in Register. */
+function getUserImageUrl(user) {
+  if (!user) return '';
+  const p = user.profile;
+  return (
+    user.image ??
+    user.avatar ??
+    user.profile_image ??
+    user.photo ??
+    p?.image ??
+    p?.avatar ??
+    p?.photo ??
+    ''
+  );
+}
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊' },
@@ -16,6 +33,8 @@ const navItems = [
   { to: '/invoices', label: 'Invoices', icon: '🧾' },
   { to: '/payments', label: 'Payments', icon: '💳' },
   { to: '/appointments', label: 'Appointments', icon: '📅' },
+  { to: '/queue', label: 'Clinic queue', icon: '🎫' },
+  { to: '/queue-display', label: 'Queue TV', icon: '📺' },
   { to: '/reports', label: 'Reports', icon: '📈' },
   { to: '/roles-permissions', label: 'Roles & Permissions', icon: '🛡️' },
 ];
@@ -26,6 +45,13 @@ export default function Sidebar() {
   const allowedItems = navItems.filter((item) => hasAnyPermission(ROUTE_PERMISSIONS[item.to] ?? []));
   const userName = currentUser?.username ?? '—';
   const userInitial = userName && userName !== '—' ? userName.charAt(0).toUpperCase() : '?';
+  const avatarUrl = getUserImageUrl(currentUser);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [avatarUrl, currentUser?.id]);
+  const showAvatarImage = Boolean(avatarUrl) && !avatarFailed;
+
   const roleText = isSuperuser
     ? 'Super Admin'
     : currentUser?.is_staff
@@ -60,8 +86,20 @@ export default function Sidebar() {
               <p className="dms-user-name">{userName}</p>
               <p className="dms-user-role">{roleText}</p>
             </div>
-            <div className="dms-user-avatar" aria-label="Logged in user avatar">
-              {userInitial}
+            <div
+              className={`dms-user-avatar ${showAvatarImage ? 'dms-user-avatar--image' : ''}`}
+              aria-label="Logged in user avatar"
+            >
+              {showAvatarImage ? (
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="dms-user-avatar-img"
+                  onError={() => setAvatarFailed(true)}
+                />
+              ) : (
+                userInitial
+              )}
             </div>
           </div>
         </div>
@@ -78,7 +116,7 @@ export default function Sidebar() {
             {label}
           </NavLink>
         ))}
-        <button className="dms-nav-link dms-logout" onClick={handleLogout}>
+        <button type="button" className="dms-nav-link dms-logout" onClick={handleLogout}>
           <span className="nav-icon">🚪</span>
           Logout
         </button>

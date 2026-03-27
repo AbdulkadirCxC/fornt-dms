@@ -33,8 +33,109 @@
   background: #0f766e;
 }
 
+.btn-import-excel {
+  padding: 0.5rem 1rem;
+  background: #f1f5f9;
+  color: #0f766e;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-import-excel:hover:not(:disabled) {
+  background: #e2e8f0;
+  border-color: #64748b;
+}
+
+.btn-import-excel:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-export-patients {
+  padding: 0.5rem 1rem;
+  background: #fff;
+  color: #0f766e;
+  border: 1px solid #0d9488;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-export-patients:hover:not(:disabled) {
+  background: #ecfdf5;
+}
+
+.btn-export-patients:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.patients-excel-input-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.page-import-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #ecfdf5;
+  color: #065f46;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #a7f3d0;
+}
+
+.page-import-result-main {
+  flex: 1;
+  min-width: min(100%, 280px);
+}
+
+.page-import-result-main p {
+  margin: 0 0 0.5rem;
+}
+
+.page-import-errors {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: #047857;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.btn-dismiss-import {
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: 1px solid #6ee7b7;
+  color: #047857;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-dismiss-import:hover {
+  background: #d1fae5;
+}
+
 .patient-form-modal {
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 1.5rem;
+  max-height: min(85vh, calc(100vh - 10rem));
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  box-sizing: border-box;
 }
 
 .search-form {
@@ -48,6 +149,16 @@
   border-radius: 6px;
   font-size: 0.95rem;
   min-width: 200px;
+}
+
+.patients-filter-select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  color: #334155;
+  max-width: 10rem;
 }
 
 .search-form button {
@@ -106,6 +217,15 @@
   color: #ffffff;
 }
 
+.patients-table-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  vertical-align: middle;
+  border: 1px solid #e2e8f0;
+}
+
 .btn-patient-appt {
   padding: 0.35rem 0.65rem;
   font-size: 0.85rem;
@@ -158,5 +278,150 @@
 
 .btn-patient-delete:disabled {
   opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Excel import preview modal */
+.excel-preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  box-sizing: border-box;
+}
+
+.excel-preview-panel {
+  width: min(100%, 1100px);
+  max-height: min(90vh, 900px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.excel-preview-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.excel-preview-header h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  color: #0f766e;
+}
+
+.excel-preview-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.excel-preview-filename {
+  font-weight: 600;
+  color: #334155;
+}
+
+.excel-preview-sep {
+  margin: 0 0.35rem;
+}
+
+.excel-preview-trunc {
+  color: #94a3b8;
+}
+
+.excel-preview-table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 1rem;
+}
+
+.excel-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.excel-preview-table th,
+.excel-preview-table td {
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f8fafc;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.excel-preview-table th {
+  background: #0f766e;
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.excel-preview-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.excel-preview-hint {
+  margin: 0;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.excel-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  background: #fafafa;
+}
+
+.excel-preview-btn-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.excel-preview-btn-cancel:hover {
+  background: #f1f5f9;
+}
+
+.excel-preview-btn-upload {
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  background: #0d9488;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.excel-preview-btn-upload:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.excel-preview-btn-upload:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
 }

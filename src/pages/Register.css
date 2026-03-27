@@ -28,10 +28,14 @@
 .register-card {
   background: white;
   width: 100%;
-  max-width: 680px;
+  max-width: none;
   padding: 1.5rem;
+  padding-right: calc(1.5rem + 0.25rem);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  max-height: min(85vh, calc(100vh - 10rem));
+  overflow-y: auto;
 }
 
 .register-header {

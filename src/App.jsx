@@ -16,6 +16,8 @@ import RecallNotifications from './pages/RecallNotifications';
 import Invoices from './pages/Invoices';
 import Payments from './pages/Payments';
 import Appointments from './pages/Appointments';
+import Queue from './pages/Queue';
+import QueueDisplay from './pages/QueueDisplay';
 import Reports from './pages/Reports';
 import RolesPermissions from './pages/RolesPermissions';
 
@@ -44,6 +46,15 @@ function App() {
             <Route path="invoices" element={<PermissionRoute required={ROUTE_PERMISSIONS['/invoices']}><Invoices /></PermissionRoute>} />
             <Route path="payments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/payments']}><Payments /></PermissionRoute>} />
             <Route path="appointments" element={<PermissionRoute required={ROUTE_PERMISSIONS['/appointments']}><Appointments /></PermissionRoute>} />
+            <Route path="queue" element={<PermissionRoute required={ROUTE_PERMISSIONS['/queue']}><Queue /></PermissionRoute>} />
+            <Route
+              path="queue-display"
+              element={
+                <PermissionRoute required={ROUTE_PERMISSIONS['/queue-display']}>
+                  <QueueDisplay />
+                </PermissionRoute>
+              }
+            />
             <Route path="reports" element={<PermissionRoute required={ROUTE_PERMISSIONS['/reports']}><Reports /></PermissionRoute>} />
             <Route path="roles-permissions" element={<PermissionRoute required={ROUTE_PERMISSIONS['/roles-permissions']}><RolesPermissions /></PermissionRoute>} />
           </Route>

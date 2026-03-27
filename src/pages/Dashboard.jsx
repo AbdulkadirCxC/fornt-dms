@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dashboardApi, appointmentsApi } from '../api/services';
+import DashboardCharts from '../components/DashboardCharts';
 import './Dashboard.css';
 
 function formatDate(d) {
@@ -242,6 +243,17 @@ export default function Dashboard() {
           </div>
         )}
       </section>
+
+      <DashboardCharts
+        loading={data.loading}
+        users={data.users}
+        patients={data.patients}
+        appointments={data.appointments}
+        invoices={data.invoices}
+        dailyRevenue={data.daily_revenue}
+        monthlyRevenue={data.monthly_revenue}
+        recentAppointments={data.recent_appointments}
+      />
     </div>
   );
 }

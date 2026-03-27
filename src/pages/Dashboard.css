@@ -9,6 +9,64 @@
   margin-bottom: 2rem;
 }
 
+.dashboard-charts {
+  margin-bottom: 2rem;
+}
+
+.dashboard-charts-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #0f766e;
+}
+
+.dashboard-charts-loading {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.25rem;
+}
+
+.dashboard-chart-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f5f9;
+}
+
+.dashboard-chart-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.01em;
+}
+
+.dashboard-chart-inner {
+  width: 100%;
+  min-height: 280px;
+}
+
+.dashboard-chart-inner--pie {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-chart-empty {
+  margin: 0;
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
 .dashboard-error {
   background: #fef2f2;
   color: #b91c1c;
@@ -62,6 +120,7 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
 }
 
 .recent-section h2 {

@@ -34,11 +34,17 @@
 }
 
 .recall-form-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 1rem;
+  padding-right: calc(1rem + 0.25rem);
   margin-bottom: 1rem;
+  max-height: min(85vh, calc(100vh - 10rem));
+  overflow-y: auto;
 }
 
 .recall-form .form-grid {

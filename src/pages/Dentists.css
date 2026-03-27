@@ -69,7 +69,13 @@
 }
 
 .dentists-page .dentist-form-modal {
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 1.5rem;
+  max-height: min(85vh, calc(100vh - 10rem));
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  box-sizing: border-box;
 }
 
 .dentists-table-wrap {

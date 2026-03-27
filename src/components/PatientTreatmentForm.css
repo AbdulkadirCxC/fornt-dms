@@ -1,9 +1,11 @@
 .patient-treatment-form {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  max-width: 920px;
 }
 
 .patient-treatment-form .form-grid-row {
@@ -89,22 +91,15 @@
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
 }
 
-.quick-patient-error {
-  margin: 0.85rem 1rem 0;
-  background: #fef2f2;
-  color: #b91c1c;
-  border-radius: 6px;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.82rem;
-}
-
 .quick-patient-modal-root {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .quick-patient-modal-backdrop {
@@ -115,7 +110,7 @@
 
 .quick-patient-modal-panel {
   position: relative;
-  width: min(560px, calc(100vw - 2rem));
+  width: min(640px, calc(100vw - 2rem));
   max-height: calc(100vh - 2rem);
   overflow: auto;
   background: #fff;
@@ -159,11 +154,23 @@
   cursor: not-allowed;
 }
 
-/* Reuse PatientForm in modal without extra shadow/card nesting. */
-.quick-patient-modal-panel .patient-form {
+.quick-patient-modal-panel .quick-patient-form {
+  margin: 0;
+  padding: 0 1rem 1.1rem;
   box-shadow: none;
   border-radius: 0;
   max-width: none;
+}
+
+/* Row 1: name, phone, gender — row 2: email, DOB — address full width */
+.quick-patient-modal-panel .quick-patient-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 600px) {
+  .quick-patient-modal-panel .quick-patient-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {

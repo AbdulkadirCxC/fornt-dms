@@ -133,3 +133,8 @@
 .searchable-select-action:hover {
   background: #ecfdf5;
 }
+
+.searchable-select-action--quick {
+  font-weight: 700;
+  color: #0d9488;
+}

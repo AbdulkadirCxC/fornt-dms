@@ -1,0 +1,112 @@
+.quick-patient-form {
+  margin: 0;
+}
+
+.quick-patient-intro {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.quick-patient-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #fecaca;
+  white-space: pre-line;
+}
+
+.quick-patient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.65rem 1rem;
+}
+
+.quick-patient-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.3rem;
+}
+
+.quick-patient-field input,
+.quick-patient-field select,
+.quick-patient-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 2.5rem;
+}
+
+.quick-patient-field textarea {
+  min-height: 3.25rem;
+}
+
+.quick-patient-field input:focus,
+.quick-patient-field select:focus,
+.quick-patient-field textarea:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.18);
+}
+
+.quick-patient-field--full {
+  grid-column: 1 / -1;
+}
+
+.quick-patient-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.quick-patient-btn-primary {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  background: #0d9488;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.quick-patient-btn-primary:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.quick-patient-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.quick-patient-btn-secondary {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.quick-patient-btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.quick-patient-form--embedded .quick-patient-actions {
+  margin-top: 0.75rem;
+}

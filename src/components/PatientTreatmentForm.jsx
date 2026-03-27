@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { patientsApi, treatmentsApi, dentistsApi } from '../api/services';
 import SearchableSelect from './SearchableSelect';
-import PatientForm from './PatientForm';
+import QuickPatientForm from './QuickPatientForm';
+import { formatAxiosError } from '../utils/apiError';
 import './PatientTreatmentForm.css';
 
 function newLine() {
@@ -42,6 +44,7 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [quickCreateOpen, setQuickCreateOpen] = useState(false);
+  const [quickCreateKey, setQuickCreateKey] = useState(0);
   const [quickCreateSaving, setQuickCreateSaving] = useState(false);
   const [quickCreateError, setQuickCreateError] = useState('');
 
@@ -75,6 +78,15 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
     };
     loadOptions();
   }, []);
+
+  useEffect(() => {
+    if (!quickCreateOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [quickCreateOpen]);
 
   const patientOptions = useMemo(
     () =>
@@ -175,9 +187,9 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
     setQuickCreateError('');
     setQuickCreateSaving(true);
     try {
-      const res = await patientsApi.create(payload);
+      const res = await patientsApi.create({ ...payload, status: 'active' });
       const created = res?.data ?? {};
-      const createdId = created.id ?? created.patientId ?? created.patient_id;
+      const createdId = created.id ?? created.pk ?? created.patientId ?? created.patient_id;
       if (createdId == null) {
         throw new Error('No patient id in response');
       }
@@ -185,11 +197,7 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
       setPatient(String(createdId));
       setQuickCreateOpen(false);
     } catch (err) {
-      const msg =
-        err.response?.data?.detail ??
-        err.response?.data?.message ??
-        'Failed to create patient.';
-      setQuickCreateError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      setQuickCreateError(formatAxiosError(err, 'Failed to create patient.'));
     } finally {
       setQuickCreateSaving(false);
     }
@@ -223,8 +231,10 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
             dropdownActions={[
               {
                 label: '+ Quick create patient',
+                className: 'searchable-select-action--quick',
                 onClick: () => {
                   setQuickCreateError('');
+                  setQuickCreateKey((k) => k + 1);
                   setQuickCreateOpen(true);
                 },
               },
@@ -339,31 +349,41 @@ export default function PatientTreatmentForm({ onSubmit, onCancel, disabled = fa
       </div>
 
       </form>
-      {quickCreateOpen && (
-        <div className="quick-patient-modal-root" role="dialog" aria-modal="true" aria-labelledby="quick-patient-title">
-          <div className="quick-patient-modal-backdrop" onClick={() => !quickCreateSaving && setQuickCreateOpen(false)} />
-          <div className="quick-patient-modal-panel">
-            <div className="quick-patient-modal-header">
-              <h4 id="quick-patient-title">Quick Create Patient</h4>
-              <button
-                type="button"
-                className="quick-patient-modal-close"
-                disabled={quickCreateSaving}
-                onClick={() => setQuickCreateOpen(false)}
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-            {quickCreateError && <div className="quick-patient-error">{quickCreateError}</div>}
-            <PatientForm
-              onSubmit={handleQuickCreatePatient}
-              onCancel={() => setQuickCreateOpen(false)}
-              disabled={disabled || quickCreateSaving}
+      {quickCreateOpen &&
+        createPortal(
+          <div className="quick-patient-modal-root" role="dialog" aria-modal="true" aria-labelledby="quick-patient-title">
+            <div
+              className="quick-patient-modal-backdrop"
+              onClick={() => !quickCreateSaving && setQuickCreateOpen(false)}
             />
-          </div>
-        </div>
-      )}
+            <div className="quick-patient-modal-panel">
+              <div className="quick-patient-modal-header">
+                <h4 id="quick-patient-title">Quick Create Patient</h4>
+                <button
+                  type="button"
+                  className="quick-patient-modal-close"
+                  disabled={quickCreateSaving}
+                  onClick={() => setQuickCreateOpen(false)}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+              <QuickPatientForm
+                idPrefix="pt-quick"
+                resetKey={quickCreateKey}
+                error={quickCreateError}
+                submitting={quickCreateSaving}
+                disabled={disabled}
+                onSubmit={handleQuickCreatePatient}
+                onCancel={() => setQuickCreateOpen(false)}
+                submitLabel="Create patient"
+                introText="Add a patient with minimal details. You can complete the full profile later under Patients."
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

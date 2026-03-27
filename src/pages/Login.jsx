@@ -47,12 +47,18 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <div className="login-page-bg" aria-hidden="true" />
       <div className="login-card">
-        <div className="login-header">
-          <span className="login-logo">🦷</span>
-          <h1>Dental Management System</h1>
-          <p>Sign in to continue</p>
-        </div>
+        <header className="login-header">
+          <div className="login-logo-ring">
+            <span className="login-logo" aria-hidden="true">
+              🦷
+            </span>
+          </div>
+          <p className="login-eyebrow">Dental Management System</p>
+          <h1 className="login-title">Welcome back</h1>
+          <p className="login-subtitle">Sign in with your clinic account to continue.</p>
+        </header>
 
         <form className="login-form" onSubmit={handleSubmit}>
           {successMessage && (
@@ -60,9 +66,13 @@ export default function Login() {
               {successMessage}
             </div>
           )}
-          {error && <div className="login-error">{error}</div>}
+          {error && (
+            <div className="login-error" role="alert">
+              {error}
+            </div>
+          )}
 
-          <div className="form-group">
+          <div className="login-field">
             <label htmlFor="username">Username</label>
             <input
               type="text"
@@ -77,7 +87,7 @@ export default function Login() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="login-field">
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -92,8 +102,17 @@ export default function Login() {
           </div>
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <>
+                <span className="login-btn-spinner" aria-hidden="true" />
+                Signing in…
+              </>
+            ) : (
+              'Sign in'
+            )}
           </button>
+
+          <p className="login-footnote">Secure connection · Staff access only</p>
         </form>
       </div>
     </div>

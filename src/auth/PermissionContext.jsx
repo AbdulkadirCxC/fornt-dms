@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { rolesApi } from '../api/services';
 import apiClient from '../api/client';
 import { AUTH_STATE_EVENT, tokenStorage } from '../api/tokenStorage';
 
 const PermissionContext = createContext({
   loading: false,
+  permissionsHydrated: false,
   permissions: new Set(),
   isSuperuser: false,
   currentUser: null,
@@ -55,24 +56,28 @@ function extractUserId(payload) {
 export function PermissionProvider({ children }) {
   const [permissions, setPermissions] = useState(new Set());
   const [loading, setLoading] = useState(false);
+  const [permissionsHydrated, setPermissionsHydrated] = useState(false);
   const [isSuperuser, setIsSuperuser] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [authRevision, setAuthRevision] = useState(0);
+  /** After first successful permission load, background refreshes must not set `loading` or routes that use PermissionRoute will unmount (e.g. closing a file picker refocuses the window). */
+  const permissionsHydratedRef = useRef(false);
 
   useEffect(() => {
-    const handleAuthStateChanged = () => setAuthRevision((v) => v + 1);
-    const handleWindowFocus = () => setAuthRevision((v) => v + 1);
+    const handleAuthStateChanged = () => {
+      permissionsHydratedRef.current = false;
+      setPermissionsHydrated(false);
+      setAuthRevision((v) => v + 1);
+    };
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         setAuthRevision((v) => v + 1);
       }
     };
     window.addEventListener(AUTH_STATE_EVENT, handleAuthStateChanged);
-    window.addEventListener('focus', handleWindowFocus);
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       window.removeEventListener(AUTH_STATE_EVENT, handleAuthStateChanged);
-      window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
@@ -84,6 +89,8 @@ export function PermissionProvider({ children }) {
       setIsSuperuser(false);
       setCurrentUser(null);
       setLoading(false);
+      permissionsHydratedRef.current = false;
+      setPermissionsHydrated(false);
       return;
     }
 
@@ -102,7 +109,9 @@ export function PermissionProvider({ children }) {
 
     let cancelled = false;
     const loadPermissions = async () => {
-      setLoading(true);
+      if (!permissionsHydratedRef.current) {
+        setLoading(true);
+      }
       try {
         const meRes = await apiClient.get('/auth/me/');
         const me = meRes?.data ?? null;
@@ -154,7 +163,13 @@ export function PermissionProvider({ children }) {
           setCurrentUser(null);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          if (!permissionsHydratedRef.current) {
+            permissionsHydratedRef.current = true;
+            setPermissionsHydrated(true);
+          }
+        }
       }
     };
 
@@ -173,8 +188,8 @@ export function PermissionProvider({ children }) {
       }
       return false;
     };
-    return { loading, permissions, isSuperuser, currentUser, hasAnyPermission };
-  }, [loading, permissions, isSuperuser, currentUser]);
+    return { loading, permissionsHydrated, permissions, isSuperuser, currentUser, hasAnyPermission };
+  }, [loading, permissionsHydrated, permissions, isSuperuser, currentUser]);
 
   return <PermissionContext.Provider value={value}>{children}</PermissionContext.Provider>;
 }

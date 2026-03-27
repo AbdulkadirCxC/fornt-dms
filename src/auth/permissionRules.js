@@ -10,6 +10,8 @@ export const ROUTE_PERMISSIONS = {
   '/invoices': ['view_invoice'],
   '/payments': ['view_payment'],
   '/appointments': ['view_appointment'],
+  '/queue': ['view_appointment'],
+  '/queue-display': ['view_appointment'],
   '/reports': ['view_report', 'view_logentry', 'view_invoice', 'view_payment'],
   '/roles-permissions': ['view_role', 'view_group', 'view_permission', 'change_permission'],
 };

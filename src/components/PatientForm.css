@@ -1,9 +1,60 @@
 .patient-form {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  max-width: 520px;
+}
+
+.patient-form-fields {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.patient-form-meta {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.patient-form-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+}
+
+.patient-form-meta-label {
+  font-weight: 600;
+  color: #64748b;
+  min-width: 7rem;
+}
+
+.patient-form-photo-preview {
+  margin-bottom: 0.5rem;
+}
+
+.patient-form-photo-preview img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+}
+
+.patient-form-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
 }
 
 .patient-form .form-grid-row {
@@ -55,16 +106,20 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: #0d9488;
   box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);

@@ -1,19 +1,76 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { reportsApi, patientsApi } from '../api/services';
 import SearchableSelect from '../components/SearchableSelect';
+import { buildCsvFromTable, downloadCsvFile } from '../utils/csvExport';
 import './Reports.css';
 
 const REPORT_TYPES = [
-  { id: 'daily-revenue', label: 'Daily Revenue', columns: ['date', 'total_patients', 'total_treatments', 'total_revenue'] },
-  { id: 'patient-treatment-history', label: 'Patient Treatment History', columns: ['patient_name', 'treatment', 'dentist', 'date', 'cost'] },
-  { id: 'appointments', label: 'Appointment Report', columns: ['date', 'patient_name', 'dentist', 'time', 'status'] },
-  { id: 'outstanding-payments', label: 'Outstanding Payments', columns: ['patient_name', 'invoice_id', 'total_amount', 'paid', 'balance'] },
-  { id: 'dentist-performance', label: 'Dentist Performance', columns: ['dentist', 'total_patients', 'total_treatments', 'total_revenue'] },
-  { id: 'most-common-treatments', label: 'Most Common Treatments', columns: ['treatment', 'times_performed', 'total_revenue'] },
-  { id: 'payment-methods', label: 'Payment Methods', columns: ['method', 'transactions', 'total_amount'] },
-  { id: 'customer-statement', label: 'Customer Statement', columns: ['date', 'type', 'invoice', 'description', 'payment', 'amount', 'balance'] },
-  { id: 'logs', label: 'Logs Report', columns: ['created_at', 'user', 'action', 'method', 'path', 'resource', 'object_id', 'ip_address'] },
+  {
+    id: 'daily-revenue',
+    label: 'Daily Revenue',
+    description: 'Patients, treatments, and revenue aggregated by day.',
+    columns: ['date', 'total_patients', 'total_treatments', 'total_revenue'],
+  },
+  {
+    id: 'patient-treatment-history',
+    label: 'Patient Treatment History',
+    description: 'Treatments performed, by patient and date.',
+    columns: ['patient_name', 'treatment', 'dentist', 'date', 'cost'],
+  },
+  {
+    id: 'appointments',
+    label: 'Appointment Report',
+    description: 'Scheduled visits with patient, dentist, and status.',
+    columns: ['date', 'patient_name', 'dentist', 'time', 'status'],
+  },
+  {
+    id: 'outstanding-payments',
+    label: 'Outstanding Payments',
+    description: 'Invoices with remaining balance.',
+    columns: ['patient_name', 'invoice_id', 'total_amount', 'paid', 'balance'],
+  },
+  {
+    id: 'dentist-performance',
+    label: 'Dentist Performance',
+    description: 'Per-dentist patient and treatment counts and revenue.',
+    columns: ['dentist', 'total_patients', 'total_treatments', 'total_revenue'],
+  },
+  {
+    id: 'most-common-treatments',
+    label: 'Most Common Treatments',
+    description: 'Frequency and revenue by treatment type.',
+    columns: ['treatment', 'times_performed', 'total_revenue'],
+  },
+  {
+    id: 'payment-methods',
+    label: 'Payment Methods',
+    description: 'Transaction counts and totals by payment method.',
+    columns: ['method', 'transactions', 'total_amount'],
+  },
+  {
+    id: 'customer-statement',
+    label: 'Customer Statement',
+    description: 'Ledger of charges and payments for one patient.',
+    columns: ['date', 'type', 'invoice', 'description', 'payment', 'amount', 'balance'],
+  },
+  {
+    id: 'logs',
+    label: 'Logs Report',
+    description: 'Audit trail of user actions and API requests.',
+    columns: ['created_at', 'user', 'action', 'method', 'path', 'resource', 'object_id', 'ip_address'],
+  },
 ];
+
+/** Reports that accept optional start_date / end_date query params (backend may ignore unknown params). */
+const REPORT_IDS_WITH_RANGE = new Set([
+  'patient-treatment-history',
+  'appointments',
+  'outstanding-payments',
+  'dentist-performance',
+  'most-common-treatments',
+  'payment-methods',
+  'logs',
+]);
 
 const API_MAP = {
   'daily-revenue': reportsApi.dailyRevenue,
@@ -55,12 +112,28 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
+function formatApiError(err, fallback) {
+  const d = err?.response?.data;
+  if (typeof d === 'string') return d;
+  if (typeof d?.detail === 'string') return d.detail;
+  if (Array.isArray(d?.detail)) {
+    const parts = d.detail.map((x) => (typeof x === 'string' ? x : x?.message ?? JSON.stringify(x)));
+    return parts.join('; ');
+  }
+  if (typeof d?.message === 'string') return d.message;
+  return fallback;
+}
+
 export default function Reports() {
+  const reportToolbarRef = useRef(null);
   const [reportType, setReportType] = useState('daily-revenue');
   const [dateFilter, setDateFilter] = useState('');
   const [patientFilter, setPatientFilter] = useState('');
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
+  const [reportRangeStart, setReportRangeStart] = useState('');
+  const [reportRangeEnd, setReportRangeEnd] = useState('');
+  const [patientHistoryPatientId, setPatientHistoryPatientId] = useState('');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +148,20 @@ export default function Reports() {
 
   const currentReport = REPORT_TYPES.find((r) => r.id === reportType);
   const isCustomerStatement = reportType === 'customer-statement';
+  const isReportWithRange = REPORT_IDS_WITH_RANGE.has(reportType);
+
+  const selectReportType = (next) => {
+    if (!next) return;
+    setReportType(next);
+    setDateFilter('');
+    setPatientFilter('');
+    setStartDateFilter('');
+    setEndDateFilter('');
+    setReportRangeStart('');
+    setReportRangeEnd('');
+    setPatientHistoryPatientId('');
+    setStatementMeta(null);
+  };
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -90,16 +177,22 @@ export default function Reports() {
       setError(null);
       try {
         const api = API_MAP[reportType];
-        const params =
-          reportType === 'daily-revenue'
-            ? (dateFilter ? { date: dateFilter } : {})
-            : isCustomerStatement
-              ? {
-                  patient: patientFilter,
-                  ...(startDateFilter ? { start_date: startDateFilter } : {}),
-                  ...(endDateFilter ? { end_date: endDateFilter } : {}),
-                }
-              : {};
+        let params = {};
+        if (reportType === 'daily-revenue') {
+          params = dateFilter ? { date: dateFilter } : {};
+        } else if (isCustomerStatement) {
+          params = {
+            patient: patientFilter,
+            ...(startDateFilter ? { start_date: startDateFilter } : {}),
+            ...(endDateFilter ? { end_date: endDateFilter } : {}),
+          };
+        } else {
+          if (reportRangeStart) params.start_date = reportRangeStart;
+          if (reportRangeEnd) params.end_date = reportRangeEnd;
+          if (reportType === 'patient-treatment-history' && patientHistoryPatientId) {
+            params.patient = patientHistoryPatientId;
+          }
+        }
         const res = await api(params);
         const d = res.data;
         if (isCustomerStatement) {
@@ -116,7 +209,7 @@ export default function Reports() {
           setStatementMeta(null);
         }
       } catch (err) {
-        setError(err.response?.data?.message ?? 'Failed to load report.');
+        setError(formatApiError(err, 'Failed to load report.'));
         setData([]);
         setStatementMeta(null);
       } finally {
@@ -124,12 +217,23 @@ export default function Reports() {
       }
     };
     fetchReport();
-  }, [reportType, dateFilter, patientFilter, startDateFilter, endDateFilter, isCustomerStatement, reloadTick]);
+  }, [
+    reportType,
+    dateFilter,
+    patientFilter,
+    startDateFilter,
+    endDateFilter,
+    reportRangeStart,
+    reportRangeEnd,
+    patientHistoryPatientId,
+    isCustomerStatement,
+    reloadTick,
+  ]);
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const res = await patientsApi.getAll({ limit: 200 });
+        const res = await patientsApi.getAll({ limit: 500, ordering: '-id' });
         const d = res.data;
         const list = Array.isArray(d) ? d : d?.results ?? d?.data ?? d?.patients ?? [];
         const opts = (Array.isArray(list) ? list : []).map((p) => ({
@@ -145,14 +249,21 @@ export default function Reports() {
   }, []);
 
   const handleReportChange = (e) => {
-    const next = e.target.value;
-    if (next) setReportType(next);
-    setDateFilter('');
-    setPatientFilter('');
-    setStartDateFilter('');
-    setEndDateFilter('');
-    setStatementMeta(null);
+    selectReportType(e.target.value);
   };
+
+  const displayColumns = useMemo(() => {
+    const base = currentReport?.columns ?? [];
+    if (!data.length) return base;
+    const fromData = new Set();
+    data.forEach((row) => {
+      if (row && typeof row === 'object') {
+        Object.keys(row).forEach((k) => fromData.add(k));
+      }
+    });
+    const extras = [...fromData].filter((k) => !base.includes(k)).sort();
+    return [...base, ...extras];
+  }, [currentReport, data]);
 
   const handleReload = () => {
     setReloadTick((v) => v + 1);
@@ -270,9 +381,13 @@ export default function Reports() {
     return val;
   };
 
-  const renderCell = (row, col) => {
+  const formatReportCell = (row, col) => {
     const value = getCellValue(row, col);
     if (value == null || value === '') return '—';
+    if (col === 'time') {
+      const s = String(value);
+      return s.length >= 5 && /^\d{1,2}:\d{2}/.test(s) ? s.slice(0, 5) : s;
+    }
     if (col.includes('revenue') || col.includes('amount') || col.includes('cost') || col === 'paid' || col === 'balance' || col === 'payment') {
       return formatAmount(value);
     }
@@ -281,6 +396,18 @@ export default function Reports() {
     if (col === 'type') return String(value);
     if (col === 'invoice' || col === 'invoice_id' || col === 'payment_id') return `#${value}`;
     return String(value);
+  };
+
+  const handleExportCsv = () => {
+    if (!data.length || loading) return;
+    if (isCustomerStatement && !patientFilter) return;
+    const day = new Date().toISOString().slice(0, 10);
+    const slug = reportType.replace(/-/g, '_');
+    const csv = buildCsvFromTable(data, displayColumns, (row, col) => {
+      const t = formatReportCell(row, col);
+      return t === '—' ? '' : t;
+    });
+    downloadCsvFile(csv, `${slug}_${day}.csv`);
   };
 
   const toLabel = (col) => {
@@ -296,7 +423,31 @@ export default function Reports() {
 
   return (
     <div className="reports-page">
-      <div className="page-header">
+      <section className="reports-catalog" aria-label="All reports">
+        <h2 className="reports-catalog-title">All reports</h2>
+        <p className="reports-catalog-intro">
+          Choose a report below or use the dropdown in the toolbar. Optional date ranges are sent to the API when
+          supported.
+        </p>
+        <div className="reports-catalog-grid">
+          {REPORT_TYPES.map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              className={`report-card ${reportType === r.id ? 'report-card--active' : ''}`}
+              onClick={() => {
+                selectReportType(r.id);
+                reportToolbarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
+              <span className="report-card-label">{r.label}</span>
+              <span className="report-card-desc">{r.description}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div ref={reportToolbarRef} className="page-header">
         <h1>Reports</h1>
         <div className="page-header-actions">
           <div className="report-selector">
@@ -319,6 +470,42 @@ export default function Reports() {
                 type="date"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
+              />
+            </div>
+          )}
+          {isReportWithRange && (
+            <>
+              <div className="date-filter">
+                <label htmlFor="report-range-start">From</label>
+                <input
+                  id="report-range-start"
+                  type="date"
+                  value={reportRangeStart}
+                  onChange={(e) => setReportRangeStart(e.target.value)}
+                />
+              </div>
+              <div className="date-filter">
+                <label htmlFor="report-range-end">To</label>
+                <input
+                  id="report-range-end"
+                  type="date"
+                  value={reportRangeEnd}
+                  onChange={(e) => setReportRangeEnd(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+          {reportType === 'patient-treatment-history' && (
+            <div className="report-selector report-selector--patient">
+              <label htmlFor="pth-patient">Patient (optional)</label>
+              <SearchableSelect
+                id="pth-patient"
+                name="patientHistoryPatient"
+                value={patientHistoryPatientId}
+                onChange={(e) => setPatientHistoryPatientId(e.target.value)}
+                options={patientOptions}
+                emptyOptionLabel="All patients"
+                searchPlaceholder="Search patients…"
               />
             </div>
           )}
@@ -379,6 +566,15 @@ export default function Reports() {
                   Print
                 </button>
               )}
+              <button
+                type="button"
+                className="btn-report-export"
+                onClick={handleExportCsv}
+                disabled={loading || !data.length || (isCustomerStatement && !patientFilter)}
+                title="Download current table as CSV"
+              >
+                Export CSV
+              </button>
             </div>
           </div>
         </div>
@@ -412,7 +608,7 @@ export default function Reports() {
           <table className={`reports-table ${isCustomerStatement ? 'customer-statement-ledger' : ''}`}>
             <thead>
               <tr>
-                {currentReport.columns.map((col) => (
+                {displayColumns.map((col) => (
                   <th key={col}>{toLabel(col)}</th>
                 ))}
               </tr>
@@ -420,13 +616,13 @@ export default function Reports() {
             <tbody>
               {data.length === 0 ? (
                 <tr>
-                  <td colSpan={currentReport.columns.length}>No data found for this report.</td>
+                  <td colSpan={Math.max(displayColumns.length, 1)}>No data found for this report.</td>
                 </tr>
               ) : (
                 data.map((row, i) => (
                   <tr key={row.id ?? row.invoice_id ?? i}>
-                    {currentReport.columns.map((col) => (
-                      <td key={col}>{renderCell(row, col)}</td>
+                    {displayColumns.map((col) => (
+                      <td key={col}>{formatReportCell(row, col)}</td>
                     ))}
                   </tr>
                 ))

@@ -1,0 +1,193 @@
+.queue-display {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 45%, #0f172a 100%);
+  color: #f1f5f9;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.queue-display__banner {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  margin-bottom: 0.75rem;
+}
+
+.queue-display__rule {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.6), transparent);
+}
+
+.queue-display__title {
+  margin: 0;
+  font-size: clamp(1.35rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5eead4;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.queue-display__meta {
+  margin: 0 0 1.25rem;
+  font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+  color: #94a3b8;
+  text-align: center;
+}
+
+.queue-display__meta-sep {
+  margin: 0 0.35rem;
+  opacity: 0.7;
+}
+
+.queue-display__error {
+  background: rgba(127, 29, 29, 0.45);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  color: #fecaca;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.queue-display__section {
+  margin-bottom: 0.5rem;
+}
+
+.queue-display__section-title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1rem, 2.8vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e2e8f0;
+  text-align: center;
+}
+
+.queue-display__table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.65);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.queue-display__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(1rem, 2.4vw, 1.85rem);
+}
+
+.queue-display__table thead th {
+  text-align: left;
+  padding: 0.65rem 1rem;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.queue-display__table tbody td {
+  padding: clamp(0.65rem, 2vw, 1.1rem) 1rem;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+  vertical-align: middle;
+}
+
+.queue-display__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.queue-display__table tbody tr:hover td {
+  background: rgba(45, 212, 191, 0.08);
+}
+
+.queue-display__ticket {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #5eead4;
+  white-space: nowrap;
+  width: 22%;
+}
+
+.queue-display__name {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.queue-display__room {
+  font-weight: 600;
+  color: #a5f3fc;
+}
+
+.queue-display__empty-cell {
+  text-align: center;
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+}
+
+.queue-display__divider {
+  height: 2px;
+  margin: clamp(1rem, 3vw, 1.75rem) 0;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.45), transparent);
+}
+
+.queue-display__divider--bottom {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.queue-display__section--waiting {
+  flex: 1;
+}
+
+.queue-display__waiting-empty {
+  margin: 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
+}
+
+.queue-display__waiting-list {
+  list-style: none;
+  margin: 0;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 1.5vw, 0.85rem);
+  justify-content: center;
+  align-content: flex-start;
+  border-radius: 12px;
+  border: 1px dashed rgba(94, 234, 212, 0.35);
+  background: rgba(15, 23, 42, 0.5);
+  min-height: clamp(4rem, 12vh, 8rem);
+}
+
+.queue-display__waiting-item {
+  font-size: clamp(1.1rem, 3vw, 2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #cbd5e1;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(100, 116, 139, 0.5);
+}
+
+@media (min-width: 1200px) {
+  .queue-display {
+    padding: 2.5rem 4rem;
+  }
+}
